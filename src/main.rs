@@ -5,32 +5,22 @@ use std::fs;
 // use syntax_tree::print_tree;
 use tree_sitter::Parser;
 
-fn get_raw_string(cursor: &mut tree_sitter::TreeCursor) {
-    let node = cursor.node();
-    let kind = node.kind();
-
-    if kind == "raw_string" {
-        println!("I am a raw_string");
-    }
-
-    if cursor.goto_first_child() {
-        get_raw_string(cursor);
-        while cursor.goto_next_sibling() {
-            get_raw_string(cursor);
-        }
-        cursor.goto_parent();
-    }
-}
-
 fn get_concatenation(cursor: &mut tree_sitter::TreeCursor) {
     let node = cursor.node();
     let kind = node.kind();
 
     if kind == "word" {
         println!("I am a word");
+    }
 
-        if cursor.goto_next_sibling() {
-            get_raw_string(cursor);
+    if kind == "raw_string" {
+        println!("I am a raw string");
+    }
+
+    if cursor.goto_first_child() {
+        get_concatenation(cursor);
+        while cursor.goto_next_sibling() {
+            get_concatenation(cursor);
         }
         cursor.goto_parent();
     }
@@ -41,11 +31,8 @@ fn get_command(cursor: &mut tree_sitter::TreeCursor) {
     let kind = node.kind();
 
     if kind == "concatenation" {
-        cursor.goto_first_child();
         get_concatenation(cursor);
     }
-
-    // println!("I am a {}", kind);
 
     if cursor.goto_first_child() {
         get_command(cursor);
@@ -75,7 +62,7 @@ fn get_aliases(cursor: &mut tree_sitter::TreeCursor) {
 }
 
 fn main() {
-    const TEST_FILE_PATH: &str = "./src/test/examples/.bashrc";
+    const TEST_FILE_PATH: &str = "./src/test/examples/.bash_aliases";
     let code = fs::read_to_string(TEST_FILE_PATH).expect("Error reading file");
 
     let mut parser = Parser::new();
@@ -97,7 +84,6 @@ fn main() {
 
     // println!("Parsed Tree:");
     // print_tree(&mut cursor, code.as_bytes(), 0);
-
     println!("Aliases:");
     get_aliases(&mut cursor);
 }
