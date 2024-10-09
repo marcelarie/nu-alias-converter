@@ -1,64 +1,78 @@
 mod syntax_tree;
 
 use std::fs;
-
-// use syntax_tree::print_tree;
 use tree_sitter::Parser;
 
-fn get_concatenation(cursor: &mut tree_sitter::TreeCursor) {
-    let node = cursor.node();
-    let kind = node.kind();
+fn extract_alias(
+    node: tree_sitter::Node,
+    source: &[u8],
+) -> Option<(String, String)> {
+    let mut cursor = node.walk();
 
-    if kind == "word" {
-        println!("I am a word");
+    // Find the command_name node
+    if !cursor.goto_first_child() || cursor.node().kind() != "command_name" {
+        return None;
     }
 
-    if kind == "raw_string" {
-        println!("I am a raw string");
+    // Check if it's an alias command
+    let command_name = cursor.node().utf8_text(source).unwrap();
+    if command_name != "alias" {
+        return None;
     }
 
-    if cursor.goto_first_child() {
-        get_concatenation(cursor);
-        while cursor.goto_next_sibling() {
-            get_concatenation(cursor);
-        }
-        cursor.goto_parent();
+    // Go to the argument node
+    if !cursor.goto_next_sibling() {
+        return None;
     }
+
+    // Extract alias name and command
+    let argument = cursor.node();
+    let argument_text = argument.utf8_text(source).unwrap();
+    let parts: Vec<&str> = argument_text.splitn(2, '=').collect();
+
+    if parts.len() != 2 {
+        return None;
+    }
+
+    Some((
+        parts[0].trim().to_string(),
+        parts[1].trim().replace('\'', "").to_string(),
+    ))
 }
 
-fn get_command(cursor: &mut tree_sitter::TreeCursor) {
-    let node = cursor.node();
-    let kind = node.kind();
-
-    if kind == "concatenation" {
-        get_concatenation(cursor);
+fn find_aliases(
+    cursor: &mut tree_sitter::TreeCursor,
+    source: &[u8],
+) -> Vec<(String, String)> {
+    let mut aliases = Vec::new();
+    
+    // Skip first node (program)
+    if !cursor.goto_first_child() {
+        return aliases;
     }
 
-    if cursor.goto_first_child() {
-        get_command(cursor);
-        while cursor.goto_next_sibling() {
-            get_command(cursor);
+    loop {
+        let node = cursor.node();
+
+        if node.kind() == "command" {
+            if let Some(alias) = extract_alias(node, source) {
+                aliases.push(alias);
+            }
         }
-        cursor.goto_parent();
-    }
-}
+        // TODO: Implement alias detection inside functions
+        // else if node.kind() == "function_definition" {
+        //     if cursor.goto_first_child() {
+        //         aliases.extend(find_aliases(cursor, source));
+        //         cursor.goto_parent();
+        //     }
+        // }
 
-fn get_aliases(cursor: &mut tree_sitter::TreeCursor) {
-    let node = cursor.node();
-    let kind = node.kind();
-
-    if kind == "command" {
-        get_command(cursor)
-    }
-
-    // Recursively get aliases
-    if cursor.goto_first_child() {
-        get_aliases(cursor);
-        while cursor.goto_next_sibling() {
-            get_aliases(cursor);
+        if !cursor.goto_next_sibling() {
+            break;
         }
-        cursor.goto_parent();
     }
+
+    aliases
 }
 
 fn main() {
@@ -72,18 +86,12 @@ fn main() {
         .set_language(&language.into())
         .expect("Error loading Bash language");
 
-    let tree = match parser.parse(code.clone(), None) {
-        Some(tree) => tree,
-        None => {
-            println!("Error parsing code");
-            return;
-        }
-    };
+    let tree = parser.parse(&code, None).expect("Error parsing code");
 
     let mut cursor = tree.walk();
 
-    // println!("Parsed Tree:");
-    // print_tree(&mut cursor, code.as_bytes(), 0);
-    println!("Aliases:");
-    get_aliases(&mut cursor);
+    let aliases = find_aliases(&mut cursor, code.as_bytes());
+    for (name, command) in aliases {
+        println!("{} => {}", name, command);
+    }
 }
