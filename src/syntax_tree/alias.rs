@@ -1,3 +1,5 @@
+// TODO: Handle each error of this function with a enum (AliasError)
+// return: -> Result<(String, String), AliasError> {
 fn extract_alias(
     node: tree_sitter::Node,
     source: &[u8],
@@ -20,19 +22,29 @@ fn extract_alias(
         return None;
     }
 
-    // Extract alias name and command
-    let argument = cursor.node();
-    let argument_text = argument.utf8_text(source).unwrap();
-    let parts: Vec<&str> = argument_text.splitn(2, '=').collect();
+    let node = cursor.node();
 
-    if parts.len() != 2 {
+    if node.child_count() != 2 {
         return None;
     }
 
-    Some((
-        parts[0].trim().to_string(),
-        parts[1].trim().replace('\'', "").to_string(),
-    ))
+    cursor.goto_first_child();
+
+    let alias_name_node = cursor.node();
+    let alias_name = alias_name_node
+        .utf8_text(source)
+        .unwrap()
+        .trim_end_matches('=');
+
+    cursor.goto_next_sibling();
+
+    let alias_content_node = cursor.node();
+    let alias_content = alias_content_node
+        .utf8_text(source)
+        .unwrap()
+        .trim_matches('\'');
+
+    Some((alias_name.to_string(), alias_content.to_string()))
 }
 
 pub fn find_aliases(
@@ -53,14 +65,13 @@ pub fn find_aliases(
             if let Some(alias) = extract_alias(node, source) {
                 aliases.push(alias);
             }
-        }
-        // TODO: Implement alias detection inside functions
-        // else if node.kind() == "function_definition" {
-        //     if cursor.goto_first_child() {
-        //         aliases.extend(find_aliases(cursor, source));
-        //         cursor.goto_parent();
-        //     }
-        // }
+        } // TODO: Implement alias detection inside functions
+          // else if node.kind() == "function_definition" {
+          //     if cursor.goto_first_child() {
+          //         aliases.extend(find_aliases(cursor, source));
+          //         cursor.goto_parent();
+          //     }
+          // }
 
         if !cursor.goto_next_sibling() {
             break;
