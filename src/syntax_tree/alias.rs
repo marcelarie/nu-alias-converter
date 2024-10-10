@@ -1,6 +1,4 @@
-use crate::syntax_tree::printer;
-
-use super::print_tree;
+use super::validate_nu_language;
 
 /// Unquote a string (remove the quotes if it has)
 // https://www.gnu.org/software/bash/manual/html_node/Quoting.html
@@ -34,6 +32,46 @@ enum AliasError {
     InvalidUtf8Text,
 }
 
+fn extract_alias_name(
+    cursor: &mut tree_sitter::TreeCursor,
+    source: &[u8],
+) -> Result<String, AliasError> {
+    match cursor.node().kind() {
+        // This happens in cases like this:
+        // alias ll='ls -l'
+        "word" => match cursor.node().utf8_text(source) {
+            Ok(alias_content) => {
+                Ok(alias_content.trim_end_matches('=').to_string())
+            }
+            Err(_) => Err(AliasError::InvalidUtf8Text),
+        },
+        // This happens in cases like this:
+        // alias "abc!"='echo String with special characters'
+        "string" => {
+            if !cursor.goto_first_child() {
+                return Err(AliasError::MissingAliasName);
+            }
+            if !cursor.goto_next_sibling() {
+                return Err(AliasError::MissingAliasName);
+            }
+
+            let string_node = cursor.node();
+
+            cursor.goto_parent();
+
+            if !cursor.goto_next_sibling() {
+                return Err(AliasError::MissingAliasName);
+            }
+
+            match string_node.utf8_text(source) {
+                Ok(alias_content) => Ok(alias_content.to_string()),
+                Err(_) => Err(AliasError::InvalidUtf8Text),
+            }
+        }
+        _ => Err(AliasError::MissingCommandName),
+    }
+}
+
 fn extract_alias(
     node: tree_sitter::Node,
     source: &[u8],
@@ -61,37 +99,7 @@ fn extract_alias(
 
     cursor.goto_first_child();
 
-    let alias_name = match cursor.node().kind() {
-        "string" => {
-            if !cursor.goto_first_child() {
-                return Err(AliasError::MissingAliasName);
-            }
-            if !cursor.goto_next_sibling() {
-                return Err(AliasError::MissingAliasName);
-            }
-
-            let string_node = cursor.node();
-
-            cursor.goto_parent();
-            cursor.goto_next_sibling();
-
-            // Attempt to extract the text content from the string node
-            match string_node.utf8_text(source) {
-                Ok(alias_content) => Ok(alias_content.to_string()),
-                Err(_) => Err(AliasError::InvalidUtf8Text),
-            }
-        }
-        "word" => {
-            // Extract the alias name from the word node and trim '=' at the end
-            match cursor.node().utf8_text(source) {
-                Ok(alias_content) => {
-                    Ok(alias_content.trim_end_matches('=').to_string())
-                }
-                Err(_) => Err(AliasError::InvalidUtf8Text),
-            }
-        }
-        _ => Err(AliasError::MissingCommandName),
-    }?;
+    let alias_name = extract_alias_name(&mut cursor, source)?;
 
     cursor.goto_next_sibling();
 
@@ -107,10 +115,17 @@ fn extract_alias(
     Ok((alias_name, unquoted_alias_content))
 }
 
+#[derive(Debug, Clone)]
+pub struct Alias {
+    pub name: String,
+    pub content: String,
+    pub is_valid_nushell: bool,
+}
+
 pub fn find_aliases(
     cursor: &mut tree_sitter::TreeCursor,
     source: &[u8],
-) -> Vec<(String, String)> {
+) -> Vec<Alias> {
     let mut aliases = Vec::new();
 
     // Skip first node (program)
@@ -123,6 +138,14 @@ pub fn find_aliases(
 
         if node.kind() == "command" {
             if let Ok(alias) = extract_alias(node, source) {
+                let (name, content) = alias;
+                let is_valid_nushell = validate_nu_language(&content);
+
+                let alias = Alias {
+                    name,
+                    content,
+                    is_valid_nushell,
+                };
                 aliases.push(alias);
             }
         } // TODO: Implement alias detection inside functions

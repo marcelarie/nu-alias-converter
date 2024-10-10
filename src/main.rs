@@ -5,7 +5,7 @@ use syntax_tree::find_aliases;
 use tree_sitter::Parser;
 
 fn main() {
-    const TEST_FILE_PATH: &str = "./src/test/examples/special_chars_bash_alias";
+    const TEST_FILE_PATH: &str = "./src/test/examples/bash_aliases";
     let code = fs::read_to_string(TEST_FILE_PATH).expect("Error reading file");
 
     let mut parser = Parser::new();
@@ -20,7 +20,11 @@ fn main() {
     let mut cursor = tree.walk();
 
     let aliases = find_aliases(&mut cursor, code.as_bytes());
-    for (name, command) in aliases {
-        println!("{} => {}", name, command);
+    for alias in aliases {
+        println!();
+        println!("Alias name: {}", alias.name);
+        println!("Alias content: {}", alias.content);
+        println!("Valid nushell: {}", alias.is_valid_nushell);
+        println!();
     }
 }
