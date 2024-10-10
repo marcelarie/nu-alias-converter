@@ -1,10 +1,20 @@
-// Unquote a string (remove the quotes if it has)
-// 'foo' -> foo
-// "foo" -> foo
-// foo -> foo
-// "\'foo\'" -> 'foo'
+use crate::syntax_tree::printer;
+
+use super::print_tree;
+
+/// Unquote a string (remove the quotes if it has)
+// https://www.gnu.org/software/bash/manual/html_node/Quoting.html
+/// Examples:
+/// unquote_string("foo")     -> foo
+/// unquote_string("'foo'")   -> foo
+/// unquote_string("\"foo\"") -> foo
+/// unquote_string("foo'")    -> foo'
 // TODO: Add tests
 fn unquote_string(string: &str) -> String {
+    if string.len() < 2 {
+        return string.to_string();
+    }
+
     let has_single_quotes = string.starts_with('\'') && string.ends_with('\'');
     let has_double_quotes = string.starts_with('"') && string.ends_with('"');
 
@@ -15,6 +25,7 @@ fn unquote_string(string: &str) -> String {
     }
 }
 
+/// Represents the possible errors that can occur when extracting an alias
 enum AliasError {
     MissingCommandName,
     MissingAliasName,
@@ -23,44 +34,64 @@ enum AliasError {
     InvalidUtf8Text,
 }
 
-// https://www.gnu.org/software/bash/manual/html_node/Quoting.html
-// TODO: Handle each error of this function with a enum (AliasError)
-// return: -> Result<(String, String), AliasError> {
 fn extract_alias(
     node: tree_sitter::Node,
     source: &[u8],
 ) -> Result<(String, String), AliasError> {
     let mut cursor = node.walk();
 
-    // Find the command_name node
     if !cursor.goto_first_child() || cursor.node().kind() != "command_name" {
         return Err(AliasError::MissingCommandName);
     }
 
-    // Check if it's an alias command
     let command_name = cursor.node().utf8_text(source).unwrap();
     if command_name != "alias" {
         return Err(AliasError::MissingAliasName);
     }
 
-    // Go to the argument node
     if !cursor.goto_next_sibling() {
         return Err(AliasError::MissingArguments);
     }
 
     let node = cursor.node();
 
-    if node.child_count() != 2 {
+    if node.child_count() > 3 {
         return Err(AliasError::InvalidArgumentCount);
     }
 
     cursor.goto_first_child();
 
-    let alias_name_node = cursor.node();
-    let alias_name = alias_name_node
-        .utf8_text(source)
-        .unwrap()
-        .trim_end_matches('=');
+    let alias_name = match cursor.node().kind() {
+        "string" => {
+            if !cursor.goto_first_child() {
+                return Err(AliasError::MissingAliasName);
+            }
+            if !cursor.goto_next_sibling() {
+                return Err(AliasError::MissingAliasName);
+            }
+
+            let string_node = cursor.node();
+
+            cursor.goto_parent();
+            cursor.goto_next_sibling();
+
+            // Attempt to extract the text content from the string node
+            match string_node.utf8_text(source) {
+                Ok(alias_content) => Ok(alias_content.to_string()),
+                Err(_) => Err(AliasError::InvalidUtf8Text),
+            }
+        }
+        "word" => {
+            // Extract the alias name from the word node and trim '=' at the end
+            match cursor.node().utf8_text(source) {
+                Ok(alias_content) => {
+                    Ok(alias_content.trim_end_matches('=').to_string())
+                }
+                Err(_) => Err(AliasError::InvalidUtf8Text),
+            }
+        }
+        _ => Err(AliasError::MissingCommandName),
+    }?;
 
     cursor.goto_next_sibling();
 
@@ -71,7 +102,9 @@ fn extract_alias(
 
     let unquoted_alias_content = unquote_string(alias_content);
 
-    Ok((alias_name.to_string(), unquoted_alias_content))
+    // println!("alias_content: {}", alias_content);
+
+    Ok((alias_name, unquoted_alias_content))
 }
 
 pub fn find_aliases(

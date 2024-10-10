@@ -5,7 +5,7 @@ use syntax_tree::find_aliases;
 use tree_sitter::Parser;
 
 fn main() {
-    const TEST_FILE_PATH: &str = "./src/test/examples/bash_aliases";
+    const TEST_FILE_PATH: &str = "./src/test/examples/special_chars_bash_alias";
     let code = fs::read_to_string(TEST_FILE_PATH).expect("Error reading file");
 
     let mut parser = Parser::new();

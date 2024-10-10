@@ -5,10 +5,11 @@ shopt -s expand_aliases
 # Simple aliases
 alias ls='ls --color=auto'
 alias ll='ls -l'
+alias "abc!"='echo String with special characters'
 alias la= 'ls -A' # This alias is invalid and should be ignored
 alias gitlog='git log --graph --oneline --decorate --all'
 
-# Cases like this are handled by the parser but it's good to have a test for it
+# Cases like this are not handled yet by the Parser
 my_function() {
     alias greet='echo Hello, World!'
 }
