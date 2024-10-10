@@ -1,7 +1,7 @@
 use tree_sitter::Parser;
 use tree_sitter_nu::LANGUAGE;
 
-pub fn validate_nu_language(content: &String) -> bool {
+pub fn validate_nu_tree_sitter_code(content: &String) -> bool {
     let mut parser = Parser::new();
     let nu_lang = LANGUAGE.into();
 

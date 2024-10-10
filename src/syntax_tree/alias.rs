@@ -1,4 +1,4 @@
-use super::validate_nu_language;
+use super::validate_nu_tree_sitter_code;
 
 /// Unquote a string (remove the quotes if it has)
 // https://www.gnu.org/software/bash/manual/html_node/Quoting.html
@@ -139,7 +139,7 @@ pub fn find_aliases(
         if node.kind() == "command" {
             if let Ok(alias) = extract_alias(node, source) {
                 let (name, content) = alias;
-                let is_valid_nushell = validate_nu_language(&content);
+                let is_valid_nushell = validate_nu_tree_sitter_code(&content);
 
                 let alias = Alias {
                     name,
