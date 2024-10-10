@@ -42,6 +42,9 @@ fn extract_alias(
     let alias_content = alias_content_node
         .utf8_text(source)
         .unwrap()
+        // TODO: Check all the cases for quotting in the Bash reference manual:
+        // https://www.gnu.org/software/bash/manual/html_node/Quoting.html
+        // and implement a unquote content fn
         .trim_matches('\'');
 
     Some((alias_name.to_string(), alias_content.to_string()))
