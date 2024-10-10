@@ -9,3 +9,4 @@ pub use printer::print_tree;
 pub use traverser::traverse_tree;
 
 pub use alias::find_aliases;
+pub use nushell::validate_nu_tree_sitter_code;
