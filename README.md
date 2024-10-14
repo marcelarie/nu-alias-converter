@@ -38,6 +38,12 @@ file will regenerate at the start of each shell session.
 
 ## Usage
 
+current implementation:
 ```bash
-nu-alias-converter .bash_aliases nushell_aliases.nu
+nu-alias-converter .bash_aliases # will generate a alias.nu file in the same directory
+```
+
+in the future it will work like this:
+```bash
+nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
 ```
