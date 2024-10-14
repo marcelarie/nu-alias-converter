@@ -163,19 +163,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
-name = "bash-aliases-converter"
-version = "0.1.0"
-dependencies = [
- "nu-cmd-lang",
- "nu-command",
- "nu-parser",
- "nu-protocol",
- "tree-sitter 0.24.2",
- "tree-sitter-bash",
- "tree-sitter-nu",
-]
-
-[[package]]
 name = "bindgen"
 version = "0.70.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1540,6 +1527,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8a3895c6391c39d7fe7ebc444a87eb2991b2a0bc718fdabd071eec617fc68e4"
 dependencies = [
  "winapi",
+]
+
+[[package]]
+name = "nu-alias-converter"
+version = "0.1.0"
+dependencies = [
+ "nu-cmd-lang",
+ "nu-command",
+ "nu-parser",
+ "nu-protocol",
+ "tree-sitter 0.24.2",
+ "tree-sitter-bash",
+ "tree-sitter-nu",
 ]
 
 [[package]]
