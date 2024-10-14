@@ -36,8 +36,8 @@ The converted aliases are written to a file. You can either generate them
 manually or use the Nushell environment. If using the environment method, the
 file will regenerate at the start of each shell session.
 
-**Diagram:**  
-Its not that complex but I always wanted to try this out.
+**Unnecessary diagram:**  
+ not that complex but I always wanted to try this out.
 ```mermaid
 ---
 config:
