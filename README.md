@@ -6,13 +6,13 @@
 TODO:
 
 - [ ] Bash aliases converter (bash to nushell)
-  - [ ] Use treesitter to parse bash and get all the aliases
+  - [x] Use treesitter to parse bash and get all the aliases
     - [ ] Handle `expand_aliases` and `shopt -s expand_aliases`
       - [ ] Needs to be recursive
-  - [ ] Convert them to nushell format
-    - [ ] Validate the content of the alias to check if it is valid nushell
-  - [ ] Write them to a file
-    - [ ] Single time
+  - [x] Convert them to nushell format
+    - [x] Validate the content of the alias to check if it is valid nushell
+  - [x] Write them to a file
+    - [x] Single time
     - [ ] Use nushell env
   - [ ] Add a command to source the file
   - [ ] Handle multiple files in a directory
