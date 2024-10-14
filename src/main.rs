@@ -5,6 +5,7 @@ use command::arguments::CliArgs;
 use std::{
     fs::{self, File},
     io::{BufWriter, Write},
+    path::Path,
 };
 use syntax_tree::find_aliases;
 use tree_sitter::Parser;
@@ -14,9 +15,12 @@ fn main() {
         eprintln!("Error: {}", e);
         std::process::exit(1);
     });
+    let file_exists = Path::new(&args.file_path).exists();
 
-    println!("Reading file: {}", args.file_path);
-    println!("No comments: {}", args.no_comments);
+    if !file_exists {
+        eprintln!("Error: File path {} does not exist", args.file_path);
+        std::process::exit(1);
+    }
 
     let code = fs::read_to_string(args.file_path).expect("Error reading file");
 

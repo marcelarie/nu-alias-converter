@@ -14,6 +14,7 @@ TODO:
   - [x] Write them to a file
     - [x] Single time
     - [ ] Use nushell env
+  - [x] Add no comments flag
   - [ ] Add a command to source the file
   - [ ] Handle multiple files in a directory
 
@@ -37,7 +38,8 @@ manually or use the Nushell environment. If using the environment method, the
 file will regenerate at the start of each shell session.
 
 **Unnecessary diagram:**  
- not that complex but I always wanted to try this out.
+Not that complex but I always wanted to try this out.
+
 ```mermaid
 ---
 config:
@@ -56,13 +58,10 @@ graph TD
   D --> I[Comment Out Invalid Aliases]
   I --> J[Include Parsing Error Information]
 ```
-<!-- <div align="center"> -->
-<!-- <img src="https://github.com/user-attachments/assets/4953aa13-8c6c-4e1a-b463-436971ee06b7" alt="Mermaid diagram" width="700"> -->
-<!-- </div> -->
 
 ## Usage
 
-current implementation:
+Current implementation:
 
 ```bash
 nu-alias-converter .bash_aliases # will generate a alias.nu file in the same directory

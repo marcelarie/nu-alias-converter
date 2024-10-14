@@ -4,11 +4,10 @@ pub struct CliArgs {
     pub debug_mode: bool,
 }
 
-pub struct GatheredArgs {
+struct GatheredArgs {
     file_path: Option<String>,
     no_comments: bool,
     debug_mode: bool,
-    #[allow(unused)]
     arguments: Vec<String>,
     #[allow(unused)]
     remaining_args: Vec<String>,
@@ -41,7 +40,24 @@ impl CliArgs {
                     debug_mode = true;
                     Some(arg.to_string())
                 }
-                _ => None,
+                "--help" | "-h" => Some(arg.to_string()),
+                _ => {
+                    let chars = arg.chars().collect::<Vec<char>>();
+                    for (index, c) in chars.iter().enumerate() {
+                        if c == &'-' {
+                            println!("Invalid flag: {}", arg);
+                            println!("Use -h for help");
+                            std::process::exit(1);
+                        }
+                        let flag = format!("-{}", c);
+                        let value =
+                            arg.chars().skip(index + 1).collect::<String>();
+                        arguments.push(flag);
+                        arguments.push(value);
+                        break;
+                    }
+                    None
+                }
             };
 
             if let Some(flag_value) = flag_value {
@@ -58,16 +74,38 @@ impl CliArgs {
         }
     }
 
-    pub fn new() -> Result<Self, &'static str> {
-        let arguments_config = Self::gather();
+    fn print_help() {
+        println!(
+            "Usage: {} [options] <script>",
+            std::env::args()
+                .next()
+                .unwrap_or_else(|| "nu-alias-converter".to_string())
+        );
+        println!();
+        println!("Options:");
+        println!("  --no-comments, -nc  Do not print comments");
+        println!("  --debug,       -d   Print debug information");
+        println!("  --help,        -h   Print this help message");
+    }
 
-        match arguments_config.file_path {
-            Some(file_path) => Ok(Self {
-                file_path,
-                no_comments: arguments_config.no_comments,
-                debug_mode: arguments_config.debug_mode,
-            }),
-            None => Err("No script name provided"),
+    pub fn new() -> Result<Self, &'static str> {
+        let gathered = Self::gather();
+        let is_help_request = gathered
+            .arguments
+            .iter()
+            .any(|arg| arg == "--help" || arg == "-h");
+
+        if is_help_request {
+            Self::print_help();
+            std::process::exit(0);
         }
+
+        let file_path = gathered.file_path.ok_or("No script name provided")?;
+
+        Ok(Self {
+            file_path,
+            no_comments: gathered.no_comments,
+            debug_mode: gathered.debug_mode,
+        })
     }
 }
