@@ -14,9 +14,16 @@ TODO:
   - [x] Write them to a file
     - [x] Single time
     - [ ] Use nushell env
-  - [x] Add no comments flag
   - [ ] Add a command to source the file
+  - [ ] Add debug flag
+  - [ ] Handle empty files
   - [ ] Handle multiple files in a directory
+  - [ ] Handle when no aliases are found in the file
+  - [ ] Handle when the file is not a bash script
+  - [x] Add help flag
+  - [x] Add no comments flag
+  - [x] Handle when file is `*.nu`
+  - [x] Handle when the file does not exist
 
 ## How?
 

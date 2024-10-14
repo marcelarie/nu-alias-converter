@@ -90,7 +90,7 @@ impl CliArgs {
         println!("Nu Alias Converter");
         println!("A tool that converts bash aliases to nushell without breaking your nu config.");
         println!();
-        println!("Usage: {} [options] <bash_aliases>", program_name);
+        println!("Usage: {} [options] <bash-aliases-script>", program_name);
         println!();
         println!("Options:");
         println!("  -nc, --no-comments  Do not include comments with the failed aliases in the output");
@@ -100,7 +100,9 @@ impl CliArgs {
         println!("  -h,  --help         Display this help message and exit");
         println!();
         println!("Arguments:");
-        println!("  <bash_aliases>         Path to the shell file to convert");
+        println!(
+            "  <file_path>         Path to the alias shell file to convert"
+        );
         println!();
         println!("Example:");
         println!("  {} --no-comments ~/.bash_aliases", program_name);
@@ -118,7 +120,9 @@ impl CliArgs {
             std::process::exit(0);
         }
 
-        let file_path = gathered.file_path.ok_or("No script name provided")?;
+        let file_path = gathered.file_path.ok_or(
+            "No file path provided.\nShow the help menu with -h or --help",
+        )?;
 
         Ok(Self {
             file_path,
