@@ -19,8 +19,8 @@ TODO:
 
 ## How?
 
-The CLI app will be written in Rust, leveraging libraries from Nushell (which is
-also written in Rust). It will use
+The CLI app will be written in Rust, needs to be to use the nushell crates
+used for parsing. It will use
 [treesitter](https://github.com/tree-sitter/tree-sitter) to parse the bash
 script and get all the aliases.
 
