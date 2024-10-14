@@ -26,6 +26,14 @@ impl CliArgs {
 
         while let Some(arg) = args.next() {
             if !arg.starts_with('-') && script_name.is_none() {
+                if arg.ends_with(".nu") {
+                    println!("Invalid script name: {}", arg.to_string());
+                    println!(
+                        "The input should be a bash aliases script (typically with no extension), not a Nushell script (.nu)"
+                    );
+                    std::process::exit(1);
+                }
+
                 script_name = Some(arg);
                 // TODO: Check if this should be continue or break
                 continue;
@@ -75,17 +83,27 @@ impl CliArgs {
     }
 
     fn print_help() {
-        println!(
-            "Usage: {} [options] <script>",
-            std::env::args()
-                .next()
-                .unwrap_or_else(|| "nu-alias-converter".to_string())
-        );
+        let program_name = std::env::args()
+            .next()
+            .unwrap_or_else(|| "nu-alias-converter".to_string());
+
+        println!("Nu Alias Converter");
+        println!("A tool that converts bash aliases to nushell without breaking your nu config.");
+        println!();
+        println!("Usage: {} [options] <bash_aliases>", program_name);
         println!();
         println!("Options:");
-        println!("  --no-comments, -nc  Do not print comments");
-        println!("  --debug,       -d   Print debug information");
-        println!("  --help,        -h   Print this help message");
+        println!("  -nc, --no-comments  Do not include comments with the failed aliases in the output");
+        println!(
+            "  -d,  --debug        Print debug information during conversion"
+        );
+        println!("  -h,  --help         Display this help message and exit");
+        println!();
+        println!("Arguments:");
+        println!("  <bash_aliases>         Path to the shell file to convert");
+        println!();
+        println!("Example:");
+        println!("  {} --no-comments ~/.bash_aliases", program_name);
     }
 
     pub fn new() -> Result<Self, &'static str> {
