@@ -1,4 +1,4 @@
-# Bash alias converter (to Nushell)
+# Nu alias converter
 
 > [!NOTE]  
 > This project is for educational purposes. I aim to learn more about tree-sitter and Rust.
@@ -19,13 +19,25 @@ TODO:
 
 ## How?
 
-The cli app will be written in Rust. It will use the `treesitter` library to
-parse the bash script and get all the aliases.
+The CLI app will be written in Rust, leveraging libraries from Nushell (which is
+also written in Rust). It will use
+[treesitter](https://github.com/tree-sitter/tree-sitter) to parse the bash
+script and get all the aliases.
 
-The aliases will then be converted to the nushell format. This implicates that it
-will check with the nushell treesitter parser that all the aliases are valid.
-If not it will add them as a comment in the alias file so the user can fix them
-or create the nushell alternative.
+The aliases will then be converted to the nushell format using the
+[nu-parser](https://github.com/nushell/nushell/tree/main/crates/nu-parser)
+crate. After converting, the aliases will be validated, if an alias is not
+valid it will be generated as a comment with the information of the parsing
+error. So the user can check it and fix it manually. It would be nice to auto
+generate the rust code from the content of the alias is the parsing fails but
+this is not a priority for now.
 
-The converted aliases will be written to a file using a manual generation or
-nushell env. When using fish env the file will be generated on each shell start.
+The converted aliases are written to a file. You can either generate them
+manually or use the Nushell environment. If using the environment method, the
+file will regenerate at the start of each shell session.
+
+## Usage
+
+```bash
+nu-alias-converter .bash_aliases nushell_aliases.nu
+```
