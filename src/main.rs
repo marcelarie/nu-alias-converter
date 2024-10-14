@@ -15,6 +15,9 @@ fn main() {
         std::process::exit(1);
     });
 
+    println!("Reading file: {}", args.file_path);
+    println!("No comments: {}", args.no_comments);
+
     let code = fs::read_to_string(args.file_path).expect("Error reading file");
 
     let mut parser = Parser::new();
@@ -42,7 +45,7 @@ fn main() {
         if alias.is_valid_nushell {
             writeln!(writer, "alias {} = {}", alias.name, alias.content)
                 .expect("Error writing to file");
-        } else {
+        } else if !args.no_comments {
             writeln!(
                 writer,
                 "# alias {} = {} # Errors: {}",
