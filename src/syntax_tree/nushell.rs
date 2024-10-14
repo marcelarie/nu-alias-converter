@@ -1,9 +1,9 @@
+use nu_cmd_lang::create_default_context;
+use nu_command::add_shell_command_context;
 use nu_parser::parse;
 use nu_protocol::engine::{EngineState, StateWorkingSet};
 use tree_sitter::Parser;
 use tree_sitter_nu::LANGUAGE;
-
-// use nu_source::{Span, Tag};
 
 pub fn validate_nu_tree_sitter_code(content: &String) -> bool {
     let mut parser = Parser::new();
@@ -16,18 +16,35 @@ pub fn validate_nu_tree_sitter_code(content: &String) -> bool {
     parser.parse(content, None).is_some()
 }
 
+fn create_nu_engine_state() -> EngineState {
+    add_shell_command_context(create_default_context())
+}
+
 pub fn validate_alias_with_nu_parser(name: &str, content: &str) -> bool {
-    let engine_state = EngineState::new();
+    let engine_state = create_nu_engine_state();
     let mut working_set = StateWorkingSet::new(&engine_state);
 
-    let alias_declaration = format!("alias {} = {}", name, content);
+    let alias_command = format!("alias {} = {}", name, content);
+    let alias_bytes = alias_command.as_bytes();
 
-    let _ =
-        parse(&mut working_set, None, alias_declaration.as_bytes(), true);
+    let _ = working_set.add_file("alias.nu".into(), &alias_bytes.to_vec());
 
-    println!("{:?}", working_set.parse_errors );
+    parse(
+        &mut working_set,
+        Some("alias.nu"),
+        alias_bytes,
+        false, // Not scoped
+    );
 
-    working_set.parse_errors.is_empty()
+    if !working_set.parse_errors.is_empty() {
+        for error in &working_set.parse_errors {
+            println!("Nushell alias parsing Error: {:?}", error);
+            println!("Error string: {}", error.to_string());
+        }
+        false
+    } else {
+        true
+    }
 }
 
 #[cfg(test)]
@@ -35,7 +52,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_validate_nu_tree_sitter_code_valid_input() {
+    fn validate_nu_alias_with_tree_sitter_valid_input() {
         let valid_nu_code = "alias ll = ls -alF".to_string();
         let result = validate_nu_tree_sitter_code(&valid_nu_code);
         assert!(
@@ -45,7 +62,7 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_alias_with_nu_parser_valid_input() {
+    fn validate_nu_alias_with_parser_valid_input() {
         let valid_alias_name = "ll";
         let valid_alias_content = "ls";
 
@@ -58,7 +75,7 @@ mod tests {
     }
 
     #[test]
-    fn test_validate_alias_with_nu_parser_invalid_input() {
+    fn validate_nu_alias_with_parser_invalid_input() {
         let invalid_alias_name = "homer";
         let invalid_alias_content = "echo $HOME";
         let result = validate_alias_with_nu_parser(
