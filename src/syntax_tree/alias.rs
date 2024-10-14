@@ -2,7 +2,7 @@ use super::nushell::validate_alias_with_nu_parser;
 
 /// Unquote a string by removing the surrounding quotes.
 /// Bash standard:  
-/// https://www.gnu.org/software/bash/manual/html_node/Quoting.html
+/// <https://www.gnu.org/software/bash/manual/html_node/Quoting.html>
 ///
 /// Examples:  
 /// unquote_string("foo")     -> foo  
