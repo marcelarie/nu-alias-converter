@@ -2,7 +2,10 @@ mod command;
 mod syntax_tree;
 
 use command::arguments::CliArgs;
-use std::fs;
+use std::{
+    fs::{self, File},
+    io::{BufWriter, Write},
+};
 use syntax_tree::find_aliases;
 use tree_sitter::Parser;
 
@@ -26,14 +29,27 @@ fn main() {
     let mut cursor = tree.walk();
 
     let aliases = find_aliases(&mut cursor, code.as_bytes());
+
+    let output_file_path = "alias.nu";
+    let file =
+        File::create(&output_file_path).expect("Error creating output file");
+    let mut writer = BufWriter::new(file);
+
     for alias in aliases {
         if alias.is_valid_nushell {
-            println!("alias {} = {}", alias.name, alias.content);
+            writeln!(writer, "alias {} = {}", alias.name, alias.content)
+                .expect("Error writing to file");
         } else {
-            println!(
+            writeln!(
+                writer,
                 "# alias {} = {} # Invalid nushell alias",
                 alias.name, alias.content
-            );
+            )
+            .expect("Error writing to file");
         }
     }
+
+    writer.flush().expect("Error flushing the buffer");
+
+    println!("Aliases written to {}", output_file_path);
 }
