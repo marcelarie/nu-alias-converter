@@ -36,14 +36,40 @@ The converted aliases are written to a file. You can either generate them
 manually or use the Nushell environment. If using the environment method, the
 file will regenerate at the start of each shell session.
 
+**Diagram:**  
+Its not that complex but I always wanted to try this out.
+```mermaid
+---
+config:
+  theme: dark
+  look: classic
+  layout: dagre
+---
+graph TD
+  A[CLI App in Rust] --> B[Parse Bash with Tree-sitter]
+  B --> C[Convert to Nushell format]
+  C --> D[Validate Alias Syntax]
+  D --> E[Write Valid Aliases to File]
+  E --> F[Manual Method]
+  E --> G[Nushell Environment Method]
+  G --> H[Regenerate File at Each Shell Session]
+  D --> I[Comment Out Invalid Aliases]
+  I --> J[Include Parsing Error Information]
+```
+<!-- <div align="center"> -->
+<!-- <img src="https://github.com/user-attachments/assets/4953aa13-8c6c-4e1a-b463-436971ee06b7" alt="Mermaid diagram" width="700"> -->
+<!-- </div> -->
+
 ## Usage
 
 current implementation:
+
 ```bash
 nu-alias-converter .bash_aliases # will generate a alias.nu file in the same directory
 ```
 
 in the future it will work like this:
+
 ```bash
 nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
 ```
