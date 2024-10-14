@@ -120,6 +120,7 @@ pub struct Alias {
     pub name: String,
     pub content: String,
     pub is_valid_nushell: bool,
+    pub error_messages: Vec<String>,
 }
 
 pub fn find_aliases(
@@ -140,7 +141,7 @@ pub fn find_aliases(
             if let Ok(alias) = extract_alias(node, source) {
                 let (name, content) = alias;
 
-                let is_valid_nushell =
+                let validate_result =
                     validate_alias_with_nu_parser(&name, &content);
 
                 // println!("Parsed: Is valid -> {}", is_valid_nushell);
@@ -148,8 +149,10 @@ pub fn find_aliases(
                 let alias = Alias {
                     name,
                     content,
-                    is_valid_nushell,
+                    is_valid_nushell: validate_result.is_valid,
+                    error_messages: validate_result.error_messages,
                 };
+
                 aliases.push(alias);
             }
         } // TODO: Implement alias detection inside functions

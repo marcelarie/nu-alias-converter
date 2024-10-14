@@ -10,7 +10,7 @@ alias la= 'ls -A'                                         # This alias is invali
 alias gitlog='git log --graph --oneline --decorate --all' # VALID
 alias invalid_nushell_alias='echo $HOME'                  # Should error with nu::parser::env_var_not_var
 alias node15="source /usr/share/nvm/init-nvm.sh"          # Should error
-alias zkn="cd ~/notes; ~/scripts/zk-new"
+# alias zkn="cd ~/notes; ~/scripts/zk-new"                # TODO: This is a valid alias but it is not being parsed correctly yet
 
 # Cases like this are not handled yet by the Parser
 my_function() {

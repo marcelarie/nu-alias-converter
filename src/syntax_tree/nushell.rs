@@ -31,12 +31,19 @@ fn create_nu_engine_state() -> EngineState {
     engine_state
 }
 
-pub fn validate_alias_with_nu_parser(name: &str, content: &str) -> bool {
+pub struct AliasValidationResult {
+    pub is_valid: bool,
+    pub error_messages: Vec<String>,
+}
+
+pub fn validate_alias_with_nu_parser(
+    name: &str,
+    content: &str,
+) -> AliasValidationResult {
     let engine_state = create_nu_engine_state();
     let mut working_set = StateWorkingSet::new(&engine_state);
 
     let alias_command = format!("alias {} = {}", name, content);
-    println!("alias_command: {}", alias_command);
     let alias_bytes = alias_command.as_bytes();
 
     let _ = working_set.add_file("alias.nu".into(), &alias_bytes.to_vec());
@@ -49,17 +56,20 @@ pub fn validate_alias_with_nu_parser(name: &str, content: &str) -> bool {
     );
 
     if !working_set.parse_errors.is_empty() {
+        let mut error_messages = Vec::new();
         for error in &working_set.parse_errors {
-            // TODO: Handle DidYouMean suggestions and generate them as comments
-            println!("ERROR: {:?}", error);
-            println!(
-                "Nushell alias parsing error string: {:?}",
-                error.to_string()
-            );
+            println!("ERROR({}): {:?}", name, error);
+            error_messages.push(error.to_string());
         }
-        false
+        AliasValidationResult {
+            is_valid: false,
+            error_messages,
+        }
     } else {
-        true
+        AliasValidationResult {
+            is_valid: true,
+            error_messages: Vec::new(),
+        }
     }
 }
 
@@ -87,7 +97,7 @@ mod tests {
             valid_alias_content,
         );
 
-        assert!(result, "Expected valid alias to return true, but got false");
+        assert!(result.is_valid, "Expected valid alias to return true, but got false");
     }
 
     #[test]
@@ -99,7 +109,7 @@ mod tests {
             invalid_alias_content,
         );
         assert!(
-            !result,
+            !result.is_valid,
             "Expected invalid alias to return false, but got true"
         );
     }
@@ -113,7 +123,7 @@ mod tests {
             invalid_alias_content,
         );
         assert!(
-            !result,
+            !result.is_valid,
             "Expected invalid alias to return false, but got true"
         );
     }
@@ -128,7 +138,7 @@ mod tests {
     //         invalid_alias_content,
     //     );
     //     assert!(
-    //         !result,
+    //         !result.is_valid,
     //         "Expected invalid alias to return false, but got true"
     //     );
     // }
