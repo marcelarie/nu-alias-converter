@@ -1,6 +1,7 @@
 pub struct CliArgs {
     pub file_path: String,
     pub no_comments: bool,
+    #[allow(unused)]
     pub debug_mode: bool,
 }
 

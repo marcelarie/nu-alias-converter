@@ -1,13 +1,14 @@
 use super::nushell::validate_alias_with_nu_parser;
 
-/// Unquote a string (remove the quotes if it has)
-// https://www.gnu.org/software/bash/manual/html_node/Quoting.html
-/// Examples:
-/// unquote_string("foo")     -> foo
-/// unquote_string("'foo'")   -> foo
-/// unquote_string("\"foo\"") -> foo
-/// unquote_string("foo'")    -> foo'
-// TODO: Add tests
+/// Unquote a string by removing the surrounding quotes.
+/// Bash standard:  
+/// https://www.gnu.org/software/bash/manual/html_node/Quoting.html
+///
+/// Examples:  
+/// unquote_string("foo")     -> foo  
+/// unquote_string("'foo'")   -> foo  
+/// unquote_string("\"foo\"") -> foo  
+/// unquote_string("foo'")    -> foo'  
 fn unquote_string(string: &str) -> String {
     if string.len() < 2 {
         return string.to_string();
@@ -123,6 +124,7 @@ pub struct Alias {
     pub error_messages: Vec<String>,
 }
 
+/// Find aliases in the given syntax tree.
 pub fn find_aliases(
     cursor: &mut tree_sitter::TreeCursor,
     source: &[u8],
@@ -169,4 +171,17 @@ pub fn find_aliases(
     }
 
     aliases
+}
+
+mod tests {
+    #[allow(unused)]
+    use super::*;
+
+    #[test]
+    fn test_unquote_string() {
+        assert_eq!(unquote_string("foo"), "foo");
+        assert_eq!(unquote_string("'foo'"), "foo");
+        assert_eq!(unquote_string("\"foo\""), "foo");
+        assert_eq!(unquote_string("foo'"), "foo'");
+    }
 }
