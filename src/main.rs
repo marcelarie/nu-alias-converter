@@ -21,10 +21,10 @@ fn main() {
 
     let aliases = find_aliases(&mut cursor, code.as_bytes());
     for alias in aliases {
-        println!();
-        println!("Alias name: {}", alias.name);
-        println!("Alias content: {}", alias.content);
-        println!("Valid nushell: {}", alias.is_valid_nushell);
-        println!();
+        if alias.is_valid_nushell {
+            println!("alias {} = {}", alias.name, alias.content);
+        } else {
+            println!("# alias {} = {} # Invalid nushell alias", alias.name, alias.content);
+        }
     }
 }
