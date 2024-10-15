@@ -1,7 +1,8 @@
 # Nu alias converter
 
 > [!NOTE]  
-> This project is for educational purposes. I aim to learn more about tree-sitter and Rust.
+> This project is for educational purposes. I aim to learn more about
+> tree-sitter, parsing, and Rust.
 
 ## How?
 
@@ -61,15 +62,18 @@ nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
 **TODO:**
 
 **Parsing Bash Aliases**
+
 - [x] Use tree-sitter to parse Bash and get all aliases
 - [ ] Handle `expand_aliases` and `shopt -s expand_aliases`
   - [ ] Implement recursive handling
 
 **Conversion to Nushell Format**
+
 - [x] Convert aliases to Nushell format
 - [x] Validate alias content to ensure it is valid Nushell (with nu-parser)
 
 **File Handling**
+
 - [x] Write the converted aliases to a file
   - [x] Write once
   - [ ] Use Nushell environment variables
@@ -82,9 +86,9 @@ nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
 - [ ] Add `.alias_ignore` file to skip certain aliases during conversion
 
 **Flags and Modes**
+
 - [x] Add `--help` flag
 - [x] Add `--no-comments` flag
 - [x] Handle `*.nu` files error
 - [x] Handle missing files
 - [x] Add debug mode
-
