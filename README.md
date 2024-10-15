@@ -3,29 +3,6 @@
 > [!NOTE]  
 > This project is for educational purposes. I aim to learn more about tree-sitter and Rust.
 
-TODO:
-
-- [ ] Bash aliases converter (bash to nushell)
-  - [x] Use treesitter to parse bash and get all the aliases
-    - [ ] Handle `expand_aliases` and `shopt -s expand_aliases`
-      - [ ] Needs to be recursive
-  - [x] Convert them to nushell format
-    - [x] Validate the content of the alias to check if it is valid nushell
-  - [x] Write them to a file
-    - [x] Single time
-    - [ ] Use nushell env
-  - [ ] Add a command to source the file
-  - [ ] Add debug flag
-  - [ ] Handle empty files
-  - [ ] Handle multiple files in a directory
-  - [ ] Handle when no aliases are found in the file
-  - [ ] Handle when the file is not a bash script
-  - [x] Add help flag
-  - [x] Add no comments flag
-  - [x] Handle when file is `*.nu`
-  - [x] Handle when the file does not exist
-  - [ ] Add `.alias_ignore` file to ignore aliases on conversion
-
 ## How?
 
 The CLI app will be written in Rust, needs to be to use the nushell crates
@@ -80,3 +57,34 @@ in the future it will work like this:
 ```bash
 nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
 ```
+
+**TODO:**
+
+**Parsing Bash Aliases**
+- [x] Use tree-sitter to parse Bash and get all aliases
+- [ ] Handle `expand_aliases` and `shopt -s expand_aliases`
+  - [ ] Implement recursive handling
+
+**Conversion to Nushell Format**
+- [x] Convert aliases to Nushell format
+- [x] Validate alias content to ensure it is valid Nushell (with nu-parser)
+
+**File Handling**
+- [x] Write the converted aliases to a file
+  - [x] Write once
+  - [ ] Use Nushell environment variables
+- [ ] Add a command to source the file in Nushell
+  - [ ] Implement auto-source functionality (?)
+- [ ] Handle empty files
+- [ ] Handle multiple files in a directory
+- [ ] Handle cases when no aliases are found in the file
+- [ ] Handle non-Bash script files
+- [ ] Add `.alias_ignore` file to skip certain aliases during conversion
+
+**Flags and Modes**
+- [x] Add `--help` flag
+- [x] Add `--no-comments` flag
+- [x] Handle `*.nu` files error
+- [x] Handle missing files
+- [x] Add debug mode
+
