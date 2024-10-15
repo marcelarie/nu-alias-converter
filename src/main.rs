@@ -48,14 +48,18 @@ fn main() {
     let has_valid_aliases = aliases.iter().any(|alias| alias.is_valid_nushell);
 
     if !has_valid_aliases {
-        println!("No valid Nushell aliases found in the Bash file '{}'", &args.file_path);
+        println!(
+            "No valid Nushell aliases found in the Bash file '{}'",
+            &args.file_path
+        );
         if !args.no_comments {
-            println!("A file '{}' was generated with comments for invalid aliases", output_file_path);
+            println!(
+                "A file '{}' was generated with comments for invalid aliases",
+                output_file_path
+            );
         }
         return;
     }
-
-    println!("Valid Nushell aliases found and written to '{}'", output_file_path);
 
     for alias in aliases {
         if alias.is_valid_nushell {
@@ -73,7 +77,7 @@ fn main() {
         }
     }
 
-    writer.flush().expect("Error flushing the buffer");
+    println!("Nushell aliases written to file '{}'", output_file_path);
 
-    println!("Aliases written to {}", output_file_path);
+    writer.flush().expect("Error flushing the buffer");
 }
