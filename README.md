@@ -24,6 +24,7 @@ TODO:
   - [x] Add no comments flag
   - [x] Handle when file is `*.nu`
   - [x] Handle when the file does not exist
+  - [ ] Add `.alias_ignore` file to ignore aliases on conversion
 
 ## How?
 

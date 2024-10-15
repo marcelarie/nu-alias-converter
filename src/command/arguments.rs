@@ -1,17 +1,22 @@
+use std::sync::OnceLock;
+
 pub struct CliArgs {
     pub file_path: String,
     pub no_comments: bool,
-    #[allow(unused)]
-    pub debug_mode: bool,
 }
 
 struct GatheredArgs {
     file_path: Option<String>,
     no_comments: bool,
-    debug_mode: bool,
     arguments: Vec<String>,
     #[allow(unused)]
     remaining_args: Vec<String>,
+}
+
+pub static DEBUG_MODE_GLOBAL: OnceLock<bool> = OnceLock::new();
+
+pub fn is_debug_mode() -> bool {
+    *DEBUG_MODE_GLOBAL.get().unwrap_or(&false)
 }
 
 impl CliArgs {
@@ -20,7 +25,6 @@ impl CliArgs {
         let mut script_name = None;
         let mut args = std::env::args();
         let mut no_comments = false;
-        let mut debug_mode = false;
 
         // Skip the program name
         args.next();
@@ -46,7 +50,7 @@ impl CliArgs {
                     Some(arg.to_string())
                 }
                 "--debug" | "-d" => {
-                    debug_mode = true;
+                    DEBUG_MODE_GLOBAL.get_or_init(|| true);
                     Some(arg.to_string())
                 }
                 "--help" | "-h" => Some(arg.to_string()),
@@ -78,7 +82,6 @@ impl CliArgs {
             arguments,
             file_path: script_name,
             no_comments,
-            debug_mode,
             remaining_args: args.collect(),
         }
     }
@@ -128,7 +131,6 @@ impl CliArgs {
         Ok(Self {
             file_path,
             no_comments: gathered.no_comments,
-            debug_mode: gathered.debug_mode,
         })
     }
 }

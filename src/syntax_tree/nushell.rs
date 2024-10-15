@@ -3,6 +3,8 @@ use nu_protocol::engine::{EngineState, StateWorkingSet};
 use tree_sitter::Parser;
 use tree_sitter_nu::LANGUAGE;
 
+use crate::command::arguments;
+
 #[allow(unused)]
 pub fn validate_nu_tree_sitter_code(content: &String) -> bool {
     let mut parser = Parser::new();
@@ -58,7 +60,9 @@ pub fn validate_alias_with_nu_parser(
     if !working_set.parse_errors.is_empty() {
         let mut error_messages = Vec::new();
         for error in &working_set.parse_errors {
-            println!("ERROR({}): {:?}", name, error);
+            if arguments::is_debug_mode() {
+                println!("ERROR({}): {:?}", name, error);
+            }
             error_messages.push(error.to_string());
         }
         AliasValidationResult {
@@ -97,7 +101,10 @@ mod tests {
             valid_alias_content,
         );
 
-        assert!(result.is_valid, "Expected valid alias to return true, but got false");
+        assert!(
+            result.is_valid,
+            "Expected valid alias to return true, but got false"
+        );
     }
 
     #[test]
