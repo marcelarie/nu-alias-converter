@@ -79,11 +79,11 @@ nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
   - [ ] Use Nushell environment variables
 - [ ] Add a command to source the file in Nushell
   - [ ] Implement auto-source functionality (?)
-- [ ] Handle empty files
 - [ ] Handle multiple files in a directory
-- [ ] Handle cases when no aliases are found in the file
 - [ ] Handle non-Bash script files
 - [ ] Add `.alias_ignore` file to skip certain aliases during conversion
+- [x] Handle cases when no aliases are found in the file
+- [x] Handle empty files
 
 **Flags and Modes**
 
