@@ -34,10 +34,14 @@ config:
   layout: dagre
 ---
 graph TD
-  A[CLI App in Rust] --> B[Parse Bash with Tree-sitter]
-  B --> C[Convert to Nushell format]
+  A[CLI App in Rust] --> K[Read .aliasignore file]
+  A --> B[Parse Bash with Tree-sitter]
+  K --> L[Should ignore alias?]
+  B --> L
+  L -->|No| C[Convert to Nushell format]
+  L -->|Yes| M[Skip alias]
   C --> D[Validate Alias Syntax]
-  D --> E[Write Valid Aliases to File]
+  D --> E[Write Valid Aliases to Nushell File]
   E --> F[Manual Method]
   E --> G[Nushell Environment Method]
   G --> H[Regenerate File at Each Shell Session]
@@ -58,6 +62,33 @@ in the future it will work like this:
 ```bash
 nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
 ```
+
+### Ignoring Aliases
+
+The user can ignore aliases by adding them to a `.aliasignore` file in the root
+of the directory where `nu-alias-converter` is run.
+
+The file should contain all the aliases that should be ignored, one per line:
+
+```plaintext
+ls
+la
+gst
+```
+
+This will not convert any of those aliases to nushell.
+
+Another option is to ignore all the aliases that use a command, the syntax would
+be the same but with a bang (`!`) in front of the command name:
+
+```plaintext
+la
+gst
+!ls
+!htop
+```
+
+This will also ignore all the aliases that use `ls` and `htop`.
 
 **TODO:**
 
