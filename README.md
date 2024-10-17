@@ -40,6 +40,7 @@ your home directory or in the nushell config directory.
 The file should contain all the aliases that should be ignored, one per line:
 
 ```plaintext
+# ~/.aliasignore
 ls
 la
 gst
@@ -51,6 +52,7 @@ Another option is to ignore all the aliases that use a command, the syntax would
 be the same but with a bang (`!`) in front of the command name:
 
 ```plaintext
+# ~/.aliasignore
 la
 gst
 !ls
