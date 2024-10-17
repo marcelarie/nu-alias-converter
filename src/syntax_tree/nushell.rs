@@ -1,21 +1,22 @@
 use nu_parser::parse;
 use nu_protocol::engine::{EngineState, StateWorkingSet};
-use tree_sitter::Parser;
-use tree_sitter_nu::LANGUAGE;
+// use tree_sitter::Parser;
+// use tree_sitter_nu::LANGUAGE;
 
 use crate::command::arguments;
 
-#[allow(unused)]
-pub fn validate_nu_tree_sitter_code(content: &String) -> bool {
-    let mut parser = Parser::new();
-    let nu_lang = LANGUAGE.into();
-
-    parser
-        .set_language(&nu_lang)
-        .expect("Error loading Nu parser");
-
-    parser.parse(content, None).is_some()
-}
+// TODO: Check if this is useful
+// #[allow(unused)]
+// pub fn validate_nu_tree_sitter_code(content: &String) -> bool {
+//     let mut parser = Parser::new();
+//     let nu_lang = LANGUAGE.into();
+//
+//     parser
+//         .set_language(&nu_lang)
+//         .expect("Error loading Nu parser");
+//
+//     parser.parse(content, None).is_some()
+// }
 
 // Other engine state generation methods from nushell:
 //     let engine_state = nu_cmd_lang::create_default_context();
