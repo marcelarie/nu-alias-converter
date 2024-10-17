@@ -1,4 +1,4 @@
-# Nu alias converter
+# Nushell alias converter
 
 > [!NOTE]  
 > This project is for educational purposes. I aim to learn more about
