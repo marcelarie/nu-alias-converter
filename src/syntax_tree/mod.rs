@@ -2,6 +2,7 @@ pub mod alias;
 pub mod nushell;
 pub mod printer;
 pub mod traverser;
+pub mod process_file;
 
 #[allow(unused)]
 pub use printer::print_tree;

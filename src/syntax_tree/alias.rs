@@ -76,6 +76,10 @@ fn extract_alias_name(
     }
 }
 
+/// Extracts an alias from the given syntax tree node.
+/// Returns the alias name and content in a tuple.
+/// * `node` - The syntax tree node to extract the alias from.
+/// * `source` - The source code as a byte slice.
 fn extract_alias(
     node: tree_sitter::Node,
     source: &[u8],
