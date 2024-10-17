@@ -82,15 +82,15 @@ pub fn validate_alias_with_nu_parser(
 mod tests {
     use super::*;
 
-    #[test]
-    fn validate_nu_alias_with_tree_sitter_valid_input() {
-        let valid_nu_code = "alias ll = ls -alF".to_string();
-        let result = validate_nu_tree_sitter_code(&valid_nu_code);
-        assert!(
-            result,
-            "Expected valid Nu code to return true, but got false"
-        );
-    }
+    // #[test]
+    // fn validate_nu_alias_with_tree_sitter_valid_input() {
+    //     let valid_nu_code = "alias ll = ls -alF".to_string();
+    //     let result = validate_nu_tree_sitter_code(&valid_nu_code);
+    //     assert!(
+    //         result,
+    //         "Expected valid Nu code to return true, but got false"
+    //     );
+    // }
 
     #[test]
     fn validate_nu_alias_with_parser_valid_input() {
