@@ -30,12 +30,22 @@ Add this to the end of your `env.nu` file (find it by running `$nu.env-path` in 
 nu-alias-converter ~/.bash_aliases -o $"($nu.default-config-dir)/bash-alises.nu"  | ignore
 ```
 
-This will make the aliases available in the Nushell environment.
+Now add this to your `config.nu` to source the generated aliases file (find the path
+with `nu.config-path`):
+
+```nushell
+source .bash_aliases.nu
+```
+
+This will make the bash aliases available in the Nushell environment.
 
 ### Ignoring Aliases
 
+Sometimes there are some aliases that you don't want to convert to Nushell,
+maybe because they are not valid or you don't want to use them in Nushell.
+
 You can ignore aliases by adding them to a `.aliasignore` file in the root of
-your home directory or in the nushell config directory. 
+your home directory or in the nushell config directory.
 
 The file should contain all the aliases that should be ignored, one per line:
 
@@ -129,6 +139,8 @@ graph TD
 - [x] Add `.alias_ignore` file to skip certain aliases during conversion
   - [x] Ignore aliases by name
   - [x] Ignore aliases by command
+  - [x] Check for .alias_ignore in the current directory
+  - [ ] Check for .alias_ignore in nu config directory
 - [x] Handle cases when no aliases are found in the file
 - [x] Handle empty files
 
