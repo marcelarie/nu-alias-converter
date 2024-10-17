@@ -2,11 +2,13 @@ use std::sync::OnceLock;
 
 pub struct CliArgs {
     pub file_path: String,
+    pub output_path: String,
     pub no_comments: bool,
 }
 
 struct GatheredArgs {
     file_path: Option<String>,
+    output_path: String,
     no_comments: bool,
     arguments: Vec<String>,
     #[allow(unused)]
@@ -19,12 +21,15 @@ pub fn is_debug_mode() -> bool {
     *DEBUG_MODE_GLOBAL.get().unwrap_or(&false)
 }
 
+pub static DEFAULT_OUTPUT_PATH: &str = "bash-aliases.nu";
+
 impl CliArgs {
     fn gather() -> GatheredArgs {
         let mut arguments: Vec<String> = Vec::new();
         let mut script_name = None;
         let mut args = std::env::args();
         let mut no_comments = false;
+        let mut output_path = DEFAULT_OUTPUT_PATH.to_string();
 
         // Skip the program name
         args.next();
@@ -48,6 +53,15 @@ impl CliArgs {
                 }
                 "--debug" | "-d" => {
                     DEBUG_MODE_GLOBAL.get_or_init(|| true);
+                    Some(arg.to_string())
+                }
+                "--output" | "-o" => {
+                    if let Some(value) = args.next() {
+                        output_path = value;
+                    } else {
+                        output_path = DEFAULT_OUTPUT_PATH.to_string();
+                    }
+
                     Some(arg.to_string())
                 }
                 "--help" | "-h" => Some(arg.to_string()),
@@ -78,6 +92,7 @@ impl CliArgs {
         GatheredArgs {
             arguments,
             file_path: script_name,
+            output_path: output_path.clone().to_string(),
             no_comments,
             remaining_args: args.collect(),
         }
@@ -99,6 +114,7 @@ impl CliArgs {
             "  -d,  --debug        Print debug information during conversion"
         );
         println!("  -h,  --help         Display this help message and exit");
+        println!("  -o,  --output       Specify the output file path");
         println!();
         println!("Arguments:");
         println!(
@@ -127,6 +143,7 @@ impl CliArgs {
 
         Ok(Self {
             file_path,
+            output_path: gathered.output_path,
             no_comments: gathered.no_comments,
         })
     }

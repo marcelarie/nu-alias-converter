@@ -14,7 +14,8 @@ pub fn process_and_write_aliases(
     alias_ignore_result: AliasIgnoreResult,
     args: &CliArgs,
 ) {
-    let output_file_path = "alias.nu";
+    let output_file_path = args.output_path.clone();
+
     let file =
         File::create(&output_file_path).expect("Error creating output file");
     let mut writer = BufWriter::new(file);

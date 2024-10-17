@@ -111,8 +111,10 @@ This will also ignore all the aliases that use `ls` and `htop`.
 - [ ] Add a command to source the file in Nushell
   - [ ] Implement auto-source functionality (?)
 - [ ] Handle multiple files in a directory
-- [ ] Handle non-Bash script files
-- [ ] Add `.alias_ignore` file to skip certain aliases during conversion
+- [ ] Handle non-Bash script files (zsh, fish)
+- [x] Add `.alias_ignore` file to skip certain aliases during conversion
+  - [x] Ignore aliases by name
+  - [x] Ignore aliases by command
 - [x] Handle cases when no aliases are found in the file
 - [x] Handle empty files
 
@@ -121,6 +123,7 @@ This will also ignore all the aliases that use `ls` and `htop`.
 - [x] Add `--help` flag
 - [x] Add `--no-comments` flag
 - [x] Handle `*.nu` files error
+- [ ] Add `--output` flag to specify the output file path and name
 - [x] Handle missing files
 - [x] Add debug mode
 
