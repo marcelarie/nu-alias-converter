@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+chrono = "0.4.38"
 nu-cmd-lang = "0.98.0"
 nu-command = "0.98.0"
 nu-parser = "0.98.0"
