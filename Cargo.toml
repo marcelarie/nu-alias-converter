@@ -3,8 +3,10 @@ name = "nu-alias-converter"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
+license-file = "LICENSE.md"
 description = "Converts Bash aliases to Nushell"
 readme = "README.md"
+repository = "https://github.com/marcelarie/nu-alias-converter"
 
 [dependencies]
 chrono = "0.4.38"
