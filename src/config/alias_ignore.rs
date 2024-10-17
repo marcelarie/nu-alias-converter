@@ -9,6 +9,7 @@ pub struct AliasIgnoreResult {
 
 pub fn get_ignore_set() -> Option<AliasIgnoreResult> {
     let ignore_file = std::fs::read_to_string(".aliasignore");
+    let should_debug = *DEBUG_MODE_GLOBAL.get().unwrap_or(&false);
 
     match ignore_file {
         Ok(file_content) => {
@@ -20,7 +21,7 @@ pub fn get_ignore_set() -> Option<AliasIgnoreResult> {
                 let alias_name = line.trim_start_matches('!').to_string();
 
                 if first_char == Some('!') {
-                    if *DEBUG_MODE_GLOBAL.get().unwrap_or(&false) {
+                    if should_debug {
                         println!(
                             "IGNORE_CMD({}): Command ignored from alias list",
                             alias_name
@@ -28,7 +29,7 @@ pub fn get_ignore_set() -> Option<AliasIgnoreResult> {
                     }
                     command_ignores.push(alias_name);
                 } else {
-                    if *DEBUG_MODE_GLOBAL.get().unwrap_or(&false) {
+                    if should_debug {
                         println!(
                             "IGNORE({}): Alias ignored from alias list",
                             alias_name

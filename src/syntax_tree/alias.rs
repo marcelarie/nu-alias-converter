@@ -1,5 +1,7 @@
-use rayon::prelude::*;
+// use crate::command::arguments::DEBUG_MODE_GLOBAL;
+
 use super::nushell::validate_alias_with_nu_parser;
+use rayon::prelude::*;
 
 /// Unquote a string by removing the surrounding quotes.
 /// Bash standard:  
@@ -126,11 +128,13 @@ pub struct Alias {
 }
 
 /// Find aliases in the given syntax tree.
+/// Uses rayon for parallel processing.
 pub fn find_aliases(
     cursor: &mut tree_sitter::TreeCursor,
     source: &[u8],
 ) -> Vec<Alias> {
     let mut aliases = Vec::new();
+    // let should_debug = *DEBUG_MODE_GLOBAL.get().unwrap_or(&false);
 
     if !cursor.goto_first_child() {
         return aliases;
@@ -150,7 +154,13 @@ pub fn find_aliases(
                     error_messages: Vec::new(),
                 });
             }
-        }
+        } // TODO: Implement alias detection inside functions
+          // else if node.kind() == "function_definition" {
+          //     if cursor.goto_first_child() {
+          //         aliases.extend(find_aliases(cursor, source));
+          //         cursor.goto_parent();
+          //     }
+          // }
 
         if !cursor.goto_next_sibling() {
             break;
@@ -161,6 +171,20 @@ pub fn find_aliases(
     aliases.par_iter_mut().for_each(|alias| {
         let validate_result =
             validate_alias_with_nu_parser(&alias.name, &alias.content);
+
+        // This might not be useful for the end user
+        // if should_debug {
+        //     println!(
+        //         "PARSED({}): Alias is {}",
+        //         alias.name,
+        //         if validate_result.is_valid {
+        //             "valid"
+        //         } else {
+        //             "invalid"
+        //         }
+        //     );
+        // }
+
         alias.is_valid_nushell = validate_result.is_valid;
         alias.error_messages = validate_result.error_messages;
     });
