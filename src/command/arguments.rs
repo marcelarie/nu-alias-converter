@@ -32,10 +32,7 @@ impl CliArgs {
         while let Some(arg) = args.next() {
             if !arg.starts_with('-') && script_name.is_none() {
                 if arg.ends_with(".nu") {
-                    println!("Invalid script name: {}", arg.to_string());
-                    println!(
-                        "The input should be a bash aliases script (typically with no extension), not a Nushell script (.nu)"
-                    );
+                    eprintln!("Error: Invalid script name '{}'.\nThe input should be a bash aliases script, not a Nushell script.", arg);
                     std::process::exit(1);
                 }
 
