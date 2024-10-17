@@ -4,6 +4,61 @@
 > This project is for educational purposes. I aim to learn more about
 > tree-sitter, parsing, and Rust.
 
+# Installation
+
+```bash
+cargo install nu-alias-converter
+```
+
+## Usage
+
+The main purpose of this tool is to convert Bash aliases to Nushell aliases.
+This can be done with this simple command:
+
+```bash
+nu-alias-converter .bash_aliases # will generate a bash-aliases.nu file in the same directory
+```
+
+but the best use case is to use it in the Nushell environment. This way, the
+file will be regenerated at the start of each shell session, so you will always
+be on sync with your Bash aliases.
+
+Add this to the end of your `env.nu` file (find it by running `$nu.env-path` in Nushell):
+
+```nushell
+# This command will be shorter in the future, I promise
+nu-alias-converter ~/.bash_aliases -o $"($nu.default-config-dir)/bash-alises.nu"  | ignore
+```
+
+This will make the aliases available in the Nushell environment.
+
+### Ignoring Aliases
+
+You can ignore aliases by adding them to a `.aliasignore` file in the root of
+your home directory or in the nushell config directory. 
+
+The file should contain all the aliases that should be ignored, one per line:
+
+```plaintext
+ls
+la
+gst
+```
+
+This will not convert any of those aliases to nushell.
+
+Another option is to ignore all the aliases that use a command, the syntax would
+be the same but with a bang (`!`) in front of the command name:
+
+```plaintext
+la
+gst
+!ls
+!htop
+```
+
+This will also ignore all the aliases that use `ls` and `htop`.
+
 ## How?
 
 The CLI app will be written in Rust, needs to be to use the nushell crates
@@ -49,47 +104,6 @@ graph TD
   I --> J[Include Parsing Error Information]
 ```
 
-## Usage
-
-Current implementation:
-
-```bash
-nu-alias-converter .bash_aliases # will generate a alias.nu file in the same directory
-```
-
-in the future it will work like this:
-
-```bash
-nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
-```
-
-### Ignoring Aliases
-
-The user can ignore aliases by adding them to a `.aliasignore` file in the root
-of the directory where `nu-alias-converter` is run.
-
-The file should contain all the aliases that should be ignored, one per line:
-
-```plaintext
-ls
-la
-gst
-```
-
-This will not convert any of those aliases to nushell.
-
-Another option is to ignore all the aliases that use a command, the syntax would
-be the same but with a bang (`!`) in front of the command name:
-
-```plaintext
-la
-gst
-!ls
-!htop
-```
-
-This will also ignore all the aliases that use `ls` and `htop`.
-
 **TODO:**
 
 **Parsing Bash Aliases**
@@ -107,9 +121,7 @@ This will also ignore all the aliases that use `ls` and `htop`.
 
 - [x] Write the converted aliases to a file
   - [x] Write once
-  - [ ] Use Nushell environment variables
-- [ ] Add a command to source the file in Nushell
-  - [ ] Implement auto-source functionality (?)
+  - [x] Use Nushell `env.nu`
 - [ ] Handle multiple files in a directory
 - [ ] Handle non-Bash script files (zsh, fish)
 - [x] Add `.alias_ignore` file to skip certain aliases during conversion
@@ -123,7 +135,7 @@ This will also ignore all the aliases that use `ls` and `htop`.
 - [x] Add `--help` flag
 - [x] Add `--no-comments` flag
 - [x] Handle `*.nu` files error
-- [ ] Add `--output` flag to specify the output file path and name
+- [x] Add `--output` flag to specify the output file path and name
 - [x] Handle missing files
 - [x] Add debug mode
 
