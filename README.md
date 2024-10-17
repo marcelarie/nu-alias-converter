@@ -34,7 +34,7 @@ Now add this to your `config.nu` to source the generated aliases file (find the 
 with `nu.config-path`):
 
 ```nushell
-source .bash_aliases.nu
+source bash_aliases.nu
 ```
 
 This will make the bash aliases available in the Nushell environment.
