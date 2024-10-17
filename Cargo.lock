@@ -1537,6 +1537,7 @@ dependencies = [
  "nu-command",
  "nu-parser",
  "nu-protocol",
+ "rayon",
  "tree-sitter 0.24.2",
  "tree-sitter-bash",
  "tree-sitter-nu",
