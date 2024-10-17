@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use super::nushell::validate_alias_with_nu_parser;
 
 /// Unquote a string by removing the surrounding quotes.
@@ -131,7 +132,6 @@ pub fn find_aliases(
 ) -> Vec<Alias> {
     let mut aliases = Vec::new();
 
-    // Skip first node (program)
     if !cursor.goto_first_child() {
         return aliases;
     }
@@ -143,32 +143,27 @@ pub fn find_aliases(
             if let Ok(alias) = extract_alias(node, source) {
                 let (name, content) = alias;
 
-                let validate_result =
-                    validate_alias_with_nu_parser(&name, &content);
-
-                // println!("Parsed: Is valid -> {}", is_valid_nushell);
-
-                let alias = Alias {
+                aliases.push(Alias {
                     name,
                     content,
-                    is_valid_nushell: validate_result.is_valid,
-                    error_messages: validate_result.error_messages,
-                };
-
-                aliases.push(alias);
+                    is_valid_nushell: false, // validation will be done in parallel later
+                    error_messages: Vec::new(),
+                });
             }
-        } // TODO: Implement alias detection inside functions
-          // else if node.kind() == "function_definition" {
-          //     if cursor.goto_first_child() {
-          //         aliases.extend(find_aliases(cursor, source));
-          //         cursor.goto_parent();
-          //     }
-          // }
+        }
 
         if !cursor.goto_next_sibling() {
             break;
         }
     }
+
+    // Parallel validation of aliases
+    aliases.par_iter_mut().for_each(|alias| {
+        let validate_result =
+            validate_alias_with_nu_parser(&alias.name, &alias.content);
+        alias.is_valid_nushell = validate_result.is_valid;
+        alias.error_messages = validate_result.error_messages;
+    });
 
     aliases
 }

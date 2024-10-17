@@ -92,3 +92,8 @@ nu-alias-converter .bash_aliases --out /path/to/nushell/nushell_aliases.nu
 - [x] Handle `*.nu` files error
 - [x] Handle missing files
 - [x] Add debug mode
+
+**Performance**
+
+- [x] Use rayon to parallelize the conversion process
+  - Improved from 25 seconds to 5 seconds with a 28888 line aliases file ✅
