@@ -188,6 +188,7 @@ pub fn find_aliases(
         //         }
         //     );
         // }
+
         alias.is_valid_nushell = validate_result.is_valid;
         alias.error_messages = validate_result.error_messages;
     });
