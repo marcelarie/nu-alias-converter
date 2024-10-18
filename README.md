@@ -1,11 +1,5 @@
 # Nushell alias converter
 
-# Installation
-
-```bash
-cargo install nu-alias-converter
-```
-
 ## Why?
 
 Nushell doesn’t directly support bash aliases due to syntax differences, making
@@ -31,6 +25,12 @@ This project, built to learn Rust and tree-sitter parsing, but it helps anyone
 that has accumulated aliases over the years to transition smoothly to Nushell
 while retaining compatibility.
 
+# Installation
+
+```bash
+cargo install nu-alias-converter
+```
+
 ## Usage
 
 Convert a single file to Nushell aliases:
@@ -43,7 +43,7 @@ nu-alias-converter .bash_aliases
 Convert all files with aliases in a directory:
 
 ```bash
-# will search for alias files in the specified directory and generate 
+# will search for alias files in the specified directory and generate
 # a bash-aliases.nu file in the same directory
 nu-alias-converter /path/to/directory
 ```
