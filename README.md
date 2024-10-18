@@ -86,7 +86,7 @@ your home directory or in the nushell config directory.
 
 The file should contain all the aliases that should be ignored, one per line:
 
-```plaintext
+```gitignore
 # ~/.aliasignore
 ls
 la
@@ -98,7 +98,7 @@ This will not convert any of those aliases to nushell.
 Another option is to ignore all the aliases that use a command, the syntax would
 be the same but with a bang (`!`) in front of the command name:
 
-```plaintext
+```gitignore
 # ~/.aliasignore
 la
 gst
