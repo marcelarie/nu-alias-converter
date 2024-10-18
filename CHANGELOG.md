@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 
 - Show error message when readign directories for now
+- Parsing invalid files when using whole directories
 
 ## [0.1.3] - 2024-10-17
 
