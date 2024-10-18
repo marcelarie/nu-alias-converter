@@ -16,7 +16,7 @@
 - [x] Write the converted aliases to a file
   - [x] Write once
   - [x] Use Nushell `env.nu`
-- [ ] Handle multiple files in a directory
+- [x] Handle multiple files in a directory
 - [ ] Handle non-Bash script files (zsh, fish)
 - [x] Add `.alias_ignore` file to skip certain aliases during conversion
   - [x] Ignore aliases by name
