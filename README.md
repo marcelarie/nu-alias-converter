@@ -117,6 +117,10 @@ config:
 graph TD
   A[CLI App in Rust] --> K[Read .aliasignore file]
   A --> B[Parse Bash with Tree-sitter]
+  A --> N[Check for Directory]
+  N -->|Is Directory| O[Search for Alias Files]
+  O --> B
+  N -->|Is File| B
   K --> L[Should ignore alias?]
   B --> L
   L -->|No| C[Convert to Nushell format]
