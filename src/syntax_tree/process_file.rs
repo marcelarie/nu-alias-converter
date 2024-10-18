@@ -1,3 +1,4 @@
+use crate::command::arguments::DEBUG_MODE_GLOBAL;
 use crate::syntax_tree::alias::Alias;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -17,15 +18,25 @@ pub fn process_file(
     parser: Rc<RefCell<Parser>>,
     file_path: PathBuf,
 ) -> Vec<Alias> {
-    let code = fs::read_to_string(file_path).expect("Error reading file");
-
-    let mut parser = parser.borrow_mut();
-
-    let tree = parser.parse(&code, None).expect("Error parsing code");
-
-    let mut cursor = tree.walk();
-
-    find_aliases(&mut cursor, code.as_bytes())
+    match fs::read_to_string(&file_path) {
+        Ok(code) => {
+            let mut parser = parser.borrow_mut();
+            let tree = parser.parse(&code, None).expect("Error parsing code");
+            let mut cursor = tree.walk();
+            find_aliases(&mut cursor, code.as_bytes())
+        }
+        Err(e) => {
+            let should_debug = *DEBUG_MODE_GLOBAL.get().unwrap_or(&false);
+            if should_debug {
+                eprintln!(
+                    "ERROR_READING({}): {:?}",
+                    file_path.display().to_string(),
+                    e
+                );
+            }
+            Vec::new()
+        }
+    }
 }
 
 /// Processes all files in a directory to extract aliases.
@@ -72,7 +83,9 @@ pub fn process_path(file_path: PathBuf) -> Vec<Alias> {
     let parser = Rc::new(RefCell::new(parser));
 
     if file_path.is_dir() {
-        process_dir(parser, file_path)
+        println!("Error: Can't process directories yet.");
+        std::process::exit(1);
+        // process_dir(parser, file_path)
     } else {
         process_file(parser, file_path)
     }

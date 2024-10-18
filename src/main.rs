@@ -6,7 +6,10 @@ mod syntax_tree;
 use command::arguments::CliArgs;
 use config::alias_ignore::{self, AliasIgnoreResult};
 use output::writer::process_and_write_aliases;
-use std::{collections::HashSet, path::{Path, PathBuf}};
+use std::{
+    collections::HashSet,
+    path::{Path, PathBuf},
+};
 use syntax_tree::process_file::process_path;
 
 fn main() {
