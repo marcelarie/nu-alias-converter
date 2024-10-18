@@ -12,23 +12,37 @@ cargo install nu-alias-converter
 
 ## Usage
 
-The main purpose of this tool is to convert Bash aliases to Nushell aliases.
+The main purpose of this tool is to convert Bash aliases to Nushell aliases.  
+
 This can be done with this simple command:
 
 ```bash
-nu-alias-converter .bash_aliases # will generate a bash-aliases.nu file in the same directory
+# will generate a bash-aliases.nu file in the same directory
+nu-alias-converter .bash_aliases 
 ```
 
-but the best use case is to use it in the Nushell environment. This way, the
-file will be regenerated at the start of each shell session, so you will always
-be on sync with your Bash aliases.
+You can also pass directories as the file path. The tool will search for files
+with names like `.bash_aliases`, `.aliases`, or `.bash_profile` in the specified
+directory:
+
+```bash
+# will search for alias files in the specified directory
+nu-alias-converter /path/to/directory 
+```
+
+For optimal use, integrate it into your Nushell environment. This approach offers two key advantages:
+
+1. **Automatic regeneration:** The alias file is recreated at the start of each shell session.
+2. **Continuous synchronization:** Your Nushell aliases stay up-to-date with your Bash aliases.
+
+This ensures that any changes to your Bash aliases are immediately reflected in your Nushell environment.
 
 Add this to the end of your `env.nu` file (find it by running `$nu.env-path` in Nushell):
 
 ```nushell
 # This command will be shorter in the future, I promise
 nu-alias-converter ~/.bash_aliases -o $"($nu.default-config-dir)/bash-alises.nu"  | ignore
-```
+````
 
 Now add this to your `config.nu` to source the generated aliases file (find the path
 with `nu.config-path`):
