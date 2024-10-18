@@ -119,6 +119,7 @@ impl CliArgs {
         );
         println!("  -h,  --help         Display this help message and exit");
         println!("  -o,  --output       Specify the output file path");
+        println!("  -v,  --version      Display the version of the program");
         println!();
         println!("Arguments:");
         println!(
