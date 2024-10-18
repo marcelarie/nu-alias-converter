@@ -7,5 +7,5 @@ build:
 test:
     cargo test -- --show-output
 
-watch-test:
+wtest:
     cargo watch -x 'test -- --show-output'
