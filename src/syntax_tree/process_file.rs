@@ -7,6 +7,46 @@ use tree_sitter::Parser;
 
 use super::find_aliases;
 
+// Validate the file path
+// * `file_path` - The path to the file to be validated
+// # Returns
+// A boolean value indicating whether the file path is valid or not
+fn validate_file_path(file_path: &PathBuf) -> bool {
+    let valid_extension = file_path
+        .extension()
+        .map(|ext| ext == "sh" || ext == "bash" || ext == "zsh")
+        .unwrap_or(false);
+
+    let full_path = file_path.to_string_lossy();
+
+    let valid_full_path = full_path == "/etc/profile"
+        || full_path == "/etc/bash.bashrc"
+        || full_path == "/etc/zsh/zshrc"
+        || full_path == "/etc/zsh/zprofile"
+        || full_path == "/etc/zshrc"
+        || full_path == "/etc/bashrc";
+
+    let valid_name = file_path
+        .file_name()
+        .map(|name| {
+            let name = name.to_string_lossy();
+
+            if name.starts_with(".bash_history") {
+                return false;
+            }
+
+            name.starts_with(".bash")
+                || name.starts_with(".zsh")
+                || name.ends_with(".env")
+                || name == ".profile"
+                || name == ".aliases"
+                || name == ".shellrc"
+        })
+        .unwrap_or(false);
+
+    valid_full_path || valid_extension || valid_name
+}
+
 /// Processes a single file to extract aliases.
 ///
 /// * `parser` - A reference-counted, refcell-wrapped Parser instance.
@@ -18,6 +58,14 @@ pub fn process_file(
     parser: Rc<RefCell<Parser>>,
     file_path: PathBuf,
 ) -> Vec<Alias> {
+    let should_debug = *DEBUG_MODE_GLOBAL.get().unwrap_or(&false);
+
+    if !validate_file_path(&file_path) {
+        return Vec::new();
+    }
+    if should_debug {
+        println!("Processing valid file: {}", file_path.display().to_string());
+    }
     match fs::read_to_string(&file_path) {
         Ok(code) => {
             let mut parser = parser.borrow_mut();
@@ -26,7 +74,6 @@ pub fn process_file(
             find_aliases(&mut cursor, code.as_bytes())
         }
         Err(e) => {
-            let should_debug = *DEBUG_MODE_GLOBAL.get().unwrap_or(&false);
             if should_debug {
                 eprintln!(
                     "ERROR_READING({}): {:?}",
@@ -51,6 +98,7 @@ pub fn process_dir(
     dir_path: PathBuf,
 ) -> Vec<Alias> {
     let files = fs::read_dir(dir_path).expect("Error reading directory");
+
     let mut all_aliases = Vec::new();
 
     for file in files {
@@ -83,9 +131,7 @@ pub fn process_path(file_path: PathBuf) -> Vec<Alias> {
     let parser = Rc::new(RefCell::new(parser));
 
     if file_path.is_dir() {
-        println!("Error: Can't process directories yet.");
-        std::process::exit(1);
-        // process_dir(parser, file_path)
+        process_dir(parser, file_path)
     } else {
         process_file(parser, file_path)
     }
@@ -99,7 +145,7 @@ mod tests {
 
     #[test]
     fn test_process_file() {
-        let file_path = PathBuf::from("./src/test/examples/bash_aliases");
+        let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
         let aliases = process_path(file_path);
         assert_eq!(aliases.len(), 7);
         assert_eq!(aliases[1].name, "ll");
@@ -115,7 +161,7 @@ mod tests {
 
     #[test]
     fn test_process_file_invalid_uknown_flags() {
-        let file_path = PathBuf::from("./src/test/examples/bash_aliases");
+        let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
         let aliases = process_path(file_path);
         assert_eq!(aliases[0].name, "ls");
         assert_eq!(aliases[0].content, "ls --color=auto");
@@ -135,7 +181,7 @@ mod tests {
 
     #[test]
     fn test_process_file_no_variables() {
-        let file_path = PathBuf::from("./src/test/examples/bash_aliases");
+        let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
         let aliases = process_path(file_path);
         assert_eq!(aliases[5].name, "invalid_nushell_alias");
         assert_eq!(aliases[5].content, "echo $HOME");
@@ -145,7 +191,7 @@ mod tests {
 
     #[test]
     fn test_process_file_can_not_create_alias_to_parser_keyword() {
-        let file_path = PathBuf::from("./src/test/examples/bash_aliases");
+        let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
         let aliases = process_path(file_path);
         assert_eq!(aliases[6].name, "node15");
         assert_eq!(aliases[6].content, "source /usr/share/nvm/init-nvm.sh");
@@ -171,5 +217,16 @@ mod tests {
         assert_eq!(aliases[3].content, "ls -l");
         assert_eq!(aliases[4].name, "la");
         assert_eq!(aliases[4].content, "ls -A");
+    }
+
+    #[test]
+    fn test_file_path_validation() {
+        let valid_file_path_profile = PathBuf::from("/etc/profile");
+        let valid_file_path_bashrc = PathBuf::from("~/.bashrc");
+        let invalid_file_path = PathBuf::from("/etc/hosts");
+
+        assert_eq!(validate_file_path(&valid_file_path_profile), true);
+        assert_eq!(validate_file_path(&valid_file_path_bashrc), true);
+        assert_eq!(validate_file_path(&invalid_file_path), false);
     }
 }
