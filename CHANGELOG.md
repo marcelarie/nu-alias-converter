@@ -8,6 +8,10 @@ All notable changes to this project will be documented in this file.
 
 - Add support for processing directories and add tests
 
+### Bug Fixes
+
+- Show error message when readign directories for now
+
 ## [0.1.3] - 2024-10-17
 
 ### Features
