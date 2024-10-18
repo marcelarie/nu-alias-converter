@@ -64,6 +64,10 @@ impl CliArgs {
 
                     Some(arg.to_string())
                 }
+                "--version" | "-v" => {
+                    println!("v{}", env!("CARGO_PKG_VERSION"));
+                    std::process::exit(0);
+                }
                 "--help" | "-h" => Some(arg.to_string()),
                 _ => {
                     let chars = arg.chars().collect::<Vec<char>>();
