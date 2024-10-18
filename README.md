@@ -1,5 +1,10 @@
 # Nushell alias converter
 
+[//]: # (Define variables for span styles)
+[yes]: <> (style="background-color: #90EE90; color: black;")
+[no]: <> (style="background-color: #FFCCCB; color: black;")
+[partial]: <> (style="background-color: #ADD8E6; color: black;")
+
 ## Why?
 
 Nushell doesn’t directly support bash aliases due to syntax differences, making
@@ -75,6 +80,28 @@ source bash_aliases.nu
 ```
 
 This will make the bash aliases available in the Nushell environment.
+
+## Shell support
+
+| Shell  | Overall Status | Aliases                        | Functions                 | Variables                 | Conditionals              | Loops                     |
+| ------ | -------------- | ------------------------------ | ------------------------- | ------------------------- | ------------------------- | ------------------------- |
+| `sh`   | Supported      | <span yes>Yes</span>           | <span no>No</span>        | <span no>No</span>        | <span no>No</span>        | <span no>No</span>        |
+| `bash` | Supported      | <span yes>Yes</span>           | <span no>No</span>        | <span no>No</span>        | <span no>No</span>        | <span no>No</span>        |
+| `zsh`  | Not tested yet | <span partial>Partial</span>   | <span no>No</span>        | <span no>No</span>        | <span no>No</span>        | <span no>No</span>        |
+| `fish` | Not supported  | <span no>No</span>             | <span no>No</span>        | <span no>No</span>        | <span no>No</span>        | <span no>No</span>        |
+
+**Notes:**
+
+- Aliases:
+  - "Yes" means fully supported
+  - "Partial" means some limitations may apply
+  - "No" means not supported
+- Functions: Currently not supported for any shell, but planned for future
+  development
+- Variables: "Partial" support means basic variable assignments may be
+  converted, but complex operations might not be supported
+- Conditionals: Currently not supported, but planned for future development
+- Loops: Currently not supported, but planned for future development
 
 ### Ignoring Aliases
 
