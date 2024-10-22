@@ -10,8 +10,8 @@ migration difficult since some aliases may break, and you can't source
 Nushell syntax for easy loading in your config. It validates aliases using
 the `nu-parser` crate to prevent config issues.
 
-I prefer keeping all aliases in one file (`~/.bash_aliases`) for compatibility
-across shells.
+If you prefer keeping all your aliases in a single file (e.g., `~/.bash_aliases`) for
+cross-shell compatibility, this tool is perfect for you.
 
 **Key features:**
 
@@ -21,9 +21,9 @@ across shells.
 - Syncs aliases at each shell session start
 - Allows manual review of problematic aliases
 
-This project, built to learn Rust and tree-sitter parsing, but it helps anyone
-that has accumulated aliases over the years to transition smoothly to Nushell
-while retaining compatibility.
+This project was built to learn Rust and tree-sitter parsing, but it also helps
+anyone who has accumulated aliases over the years to transition smoothly to
+Nushell while retaining compatibility.
 
 # Installation
 
