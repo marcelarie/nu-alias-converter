@@ -23,7 +23,7 @@ pub fn print_tree(cursor: &mut TreeCursor, source: &[u8], depth: usize) {
         indent = depth * 2
     );
 
-    // Print the node's text if it's a leaf node (no children/last node) 
+    // Print the node's text if it's a leaf node (no children/last node)
     if node.child_count() == 0 {
         let text = &source[node.byte_range()];
         if let Ok(text) = std::str::from_utf8(text) {

@@ -6,8 +6,8 @@ use crate::command::arguments::DEBUG_MODE_GLOBAL;
 /// * `alias_ignores` - A set of alias names to ignore.
 /// * `command_ignores` - A list of command names to ignore.
 pub struct AliasIgnoreResult {
-    pub alias_ignores: HashSet<String>, 
-    pub command_ignores: Vec<String>, 
+    pub alias_ignores:   HashSet<String>,
+    pub command_ignores: Vec<String>,
 }
 
 /// Parses the `.aliasignore` file and returns the result.

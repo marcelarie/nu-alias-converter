@@ -35,7 +35,7 @@ fn create_nu_engine_state() -> EngineState {
 }
 
 pub struct AliasValidationResult {
-    pub is_valid: bool,
+    pub is_valid:       bool,
     pub error_messages: Vec<String>,
 }
 
@@ -72,7 +72,7 @@ pub fn validate_alias_with_nu_parser(
         }
     } else {
         AliasValidationResult {
-            is_valid: true,
+            is_valid:       true,
             error_messages: Vec::new(),
         }
     }

@@ -26,7 +26,7 @@ fn main() {
 
     let alias_ignore_result =
         alias_ignore::get_ignore_set().unwrap_or_else(|| AliasIgnoreResult {
-            alias_ignores: HashSet::new(),
+            alias_ignores:   HashSet::new(),
             command_ignores: Vec::new(),
         });
 

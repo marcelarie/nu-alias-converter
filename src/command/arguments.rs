@@ -1,16 +1,16 @@
 use std::sync::OnceLock;
 
 pub struct CliArgs {
-    pub file_path: String,
+    pub file_path:   String,
     pub output_path: String,
     pub no_comments: bool,
 }
 
 struct GatheredArgs {
-    file_path: Option<String>,
-    output_path: String,
-    no_comments: bool,
-    arguments: Vec<String>,
+    file_path:      Option<String>,
+    output_path:    String,
+    no_comments:    bool,
+    arguments:      Vec<String>,
     #[allow(unused)]
     remaining_args: Vec<String>,
 }

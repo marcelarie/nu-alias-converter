@@ -125,10 +125,10 @@ fn extract_alias(
 
 #[derive(Debug, Clone)]
 pub struct Alias {
-    pub name: String,
-    pub content: String,
+    pub name:             String,
+    pub content:          String,
     pub is_valid_nushell: bool,
-    pub error_messages: Vec<String>,
+    pub error_messages:   Vec<String>,
 }
 
 /// Find aliases in the given syntax tree.
