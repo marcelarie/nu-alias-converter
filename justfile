@@ -9,3 +9,6 @@ test:
 
 wtest:
     cargo watch -x 'test -- --show-output'
+
+check:
+    bacon
