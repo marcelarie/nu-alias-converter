@@ -54,10 +54,7 @@ fn validate_file_path(file_path: &PathBuf) -> bool {
 ///
 /// # Returns
 /// A vector of `Alias` instances extracted from the file.
-pub fn process_file(
-    parser: Rc<RefCell<Parser>>,
-    file_path: PathBuf,
-) -> Vec<Alias> {
+pub fn process_file(parser: Rc<RefCell<Parser>>, file_path: PathBuf) -> Vec<Alias> {
     let should_debug = *DEBUG_MODE_GLOBAL.get().unwrap_or(&false);
 
     if !validate_file_path(&file_path) {
@@ -93,10 +90,7 @@ pub fn process_file(
 ///
 /// # Returns
 /// A vector of `Alias` instances extracted from all files in the directory.
-pub fn process_dir(
-    parser: Rc<RefCell<Parser>>,
-    dir_path: PathBuf,
-) -> Vec<Alias> {
+pub fn process_dir(parser: Rc<RefCell<Parser>>, dir_path: PathBuf) -> Vec<Alias> {
     let files = fs::read_dir(dir_path).expect("Error reading directory");
 
     let mut all_aliases = Vec::new();
@@ -140,93 +134,98 @@ pub fn process_path(file_path: PathBuf) -> Vec<Alias> {
 // Write boilerplate tests
 #[cfg(test)]
 mod tests {
+    mod should_pass {
+        use super::super::*;
 
-    use super::*;
+        #[test]
+        fn extracts_aliases_from_file() {
+            let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
+            let aliases = process_path(file_path);
+            assert_eq!(aliases.len(), 7);
+            assert_eq!(aliases[1].name, "ll");
+            assert_eq!(aliases[1].content, "ls -l");
+            assert_eq!(aliases[2].name, "abc!");
+            assert_eq!(aliases[2].content, "echo String with special characters");
+            assert_eq!(aliases[4].name, "gitlog");
+            assert_eq!(
+                aliases[4].content,
+                "git log --graph --oneline --decorate --all"
+            );
+        }
 
-    #[test]
-    fn test_process_file() {
-        let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
-        let aliases = process_path(file_path);
-        assert_eq!(aliases.len(), 7);
-        assert_eq!(aliases[1].name, "ll");
-        assert_eq!(aliases[1].content, "ls -l");
-        assert_eq!(aliases[2].name, "abc!");
-        assert_eq!(aliases[2].content, "echo String with special characters");
-        assert_eq!(aliases[4].name, "gitlog");
-        assert_eq!(
-            aliases[4].content,
-            "git log --graph --oneline --decorate --all"
-        );
+        #[test]
+        fn extracts_aliases_from_directory() {
+            let dir_path = PathBuf::from("./src/test/examples/aliases_dir/");
+            let aliases = process_path(dir_path);
+            assert_eq!(aliases.len(), 5);
+            assert_eq!(aliases[0].name, "brc");
+            assert_eq!(aliases[0].content, "cat \"$HOME\"/.bashrc");
+            assert_eq!(aliases[1].name, "brcs");
+            assert_eq!(aliases[1].content, "source \"$HOME\"/.bashrc");
+            assert_eq!(aliases[2].name, "ls");
+            assert_eq!(aliases[2].content, "ls --color=auto");
+            assert_eq!(aliases[3].name, "ll");
+            assert_eq!(aliases[3].content, "ls -l");
+            assert_eq!(aliases[4].name, "la");
+            assert_eq!(aliases[4].content, "ls -A");
+        }
+
+        #[test]
+        fn validates_file_paths() {
+            let valid_file_path_profile = PathBuf::from("/etc/profile");
+            let valid_file_path_bashrc = PathBuf::from("~/.bashrc");
+            let invalid_file_path = PathBuf::from("/etc/hosts");
+
+            assert!(validate_file_path(&valid_file_path_profile));
+            assert!(validate_file_path(&valid_file_path_bashrc));
+            assert!(!validate_file_path(&invalid_file_path));
+        }
     }
 
-    #[test]
-    fn test_process_file_invalid_uknown_flags() {
-        let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
-        let aliases = process_path(file_path);
-        assert_eq!(aliases[0].name, "ls");
-        assert_eq!(aliases[0].content, "ls --color=auto");
-        assert_eq!(aliases[0].is_valid_nushell, false);
-        assert_eq!(
-            aliases[0].error_messages[0],
-            "The `ls` command doesn't have flag `color`."
-        );
-        assert_eq!(aliases[3].name, "la");
-        assert_eq!(aliases[3].content, "ls -A");
-        assert_eq!(aliases[3].is_valid_nushell, false);
-        assert_eq!(
-            aliases[3].error_messages[0],
-            "The `ls` command doesn't have flag `-A`."
-        );
-    }
+    mod should_fail {
+        use super::super::*;
 
-    #[test]
-    fn test_process_file_no_variables() {
-        let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
-        let aliases = process_path(file_path);
-        assert_eq!(aliases[5].name, "invalid_nushell_alias");
-        assert_eq!(aliases[5].content, "echo $HOME");
-        assert_eq!(aliases[5].is_valid_nushell, false);
-        assert_eq!(aliases[5].error_messages[0], "Variable not found.");
-    }
+        #[test]
+        fn unknown_flags() {
+            let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
+            let aliases = process_path(file_path);
+            assert_eq!(aliases[0].name, "ls");
+            assert_eq!(aliases[0].content, "ls --color=auto");
+            assert!(!aliases[0].is_valid_nushell);
+            assert_eq!(
+                aliases[0].error_messages[0],
+                "The `ls` command doesn't have flag `color`."
+            );
+            assert_eq!(aliases[3].name, "la");
+            assert_eq!(aliases[3].content, "ls -A");
+            assert!(!aliases[3].is_valid_nushell);
+            assert_eq!(
+                aliases[3].error_messages[0],
+                "The `ls` command doesn't have flag `-A`."
+            );
+        }
 
-    #[test]
-    fn test_process_file_can_not_create_alias_to_parser_keyword() {
-        let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
-        let aliases = process_path(file_path);
-        assert_eq!(aliases[6].name, "node15");
-        assert_eq!(aliases[6].content, "source /usr/share/nvm/init-nvm.sh");
-        assert_eq!(aliases[6].is_valid_nushell, false);
-        assert_eq!(
-            aliases[6].error_messages[0],
-            "Can't create alias to parser keyword."
-        );
-    }
+        #[test]
+        fn undefined_variables() {
+            let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
+            let aliases = process_path(file_path);
+            assert_eq!(aliases[5].name, "invalid_nushell_alias");
+            assert_eq!(aliases[5].content, "echo $HOME");
+            assert!(!aliases[5].is_valid_nushell);
+            assert_eq!(aliases[5].error_messages[0], "Variable not found.");
+        }
 
-    #[test]
-    fn test_process_dir() {
-        let dir_path = PathBuf::from("./src/test/examples/aliases_dir/");
-        let aliases = process_path(dir_path);
-        assert_eq!(aliases.len(), 5);
-        assert_eq!(aliases[0].name, "brc");
-        assert_eq!(aliases[0].content, "cat \"$HOME\"/.bashrc");
-        assert_eq!(aliases[1].name, "brcs");
-        assert_eq!(aliases[1].content, "source \"$HOME\"/.bashrc");
-        assert_eq!(aliases[2].name, "ls");
-        assert_eq!(aliases[2].content, "ls --color=auto");
-        assert_eq!(aliases[3].name, "ll");
-        assert_eq!(aliases[3].content, "ls -l");
-        assert_eq!(aliases[4].name, "la");
-        assert_eq!(aliases[4].content, "ls -A");
-    }
-
-    #[test]
-    fn test_file_path_validation() {
-        let valid_file_path_profile = PathBuf::from("/etc/profile");
-        let valid_file_path_bashrc = PathBuf::from("~/.bashrc");
-        let invalid_file_path = PathBuf::from("/etc/hosts");
-
-        assert_eq!(validate_file_path(&valid_file_path_profile), true);
-        assert_eq!(validate_file_path(&valid_file_path_bashrc), true);
-        assert_eq!(validate_file_path(&invalid_file_path), false);
+        #[test]
+        fn alias_to_parser_keyword() {
+            let file_path = PathBuf::from("./src/test/examples/.bash_aliases");
+            let aliases = process_path(file_path);
+            assert_eq!(aliases[6].name, "node15");
+            assert_eq!(aliases[6].content, "source /usr/share/nvm/init-nvm.sh");
+            assert!(!aliases[6].is_valid_nushell);
+            assert_eq!(
+                aliases[6].error_messages[0],
+                "Can't create alias to parser keyword."
+            );
+        }
     }
 }

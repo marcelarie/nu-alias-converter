@@ -27,22 +27,17 @@ use crate::command::arguments;
 //     let engine_state = nu_cli::add_cli_context(engine_state);
 //     nu_explore::add_explore_context(engine_state)
 fn create_nu_engine_state() -> EngineState {
-    let engine_state = nu_command::add_shell_command_context(
-        nu_cmd_lang::create_default_context(),
-    );
+    let engine_state = nu_command::add_shell_command_context(nu_cmd_lang::create_default_context());
 
     engine_state
 }
 
 pub struct AliasValidationResult {
-    pub is_valid:       bool,
+    pub is_valid: bool,
     pub error_messages: Vec<String>,
 }
 
-pub fn validate_alias_with_nu_parser(
-    name: &str,
-    content: &str,
-) -> AliasValidationResult {
+pub fn validate_alias_with_nu_parser(name: &str, content: &str) -> AliasValidationResult {
     let engine_state = create_nu_engine_state();
     let mut working_set = StateWorkingSet::new(&engine_state);
 
@@ -72,7 +67,7 @@ pub fn validate_alias_with_nu_parser(
         }
     } else {
         AliasValidationResult {
-            is_valid:       true,
+            is_valid: true,
             error_messages: Vec::new(),
         }
     }
@@ -82,72 +77,61 @@ pub fn validate_alias_with_nu_parser(
 mod tests {
     use super::*;
 
-    // #[test]
-    // fn validate_nu_alias_with_tree_sitter_valid_input() {
-    //     let valid_nu_code = "alias ll = ls -alF".to_string();
-    //     let result = validate_nu_tree_sitter_code(&valid_nu_code);
-    //     assert!(
-    //         result,
-    //         "Expected valid Nu code to return true, but got false"
-    //     );
-    // }
+    mod should_pass {
+        use super::*;
 
-    #[test]
-    fn validate_nu_alias_with_parser_valid_input() {
-        let valid_alias_name = "ll";
-        let valid_alias_content = "ls";
+        #[test]
+        fn simple_ls_alias() {
+            let valid_alias_name = "ll";
+            let valid_alias_content = "ls";
 
-        let result = validate_alias_with_nu_parser(
-            valid_alias_name,
-            valid_alias_content,
-        );
+            let result = validate_alias_with_nu_parser(valid_alias_name, valid_alias_content);
 
-        assert!(
-            result.is_valid,
-            "Expected valid alias to return true, but got false"
-        );
+            assert!(
+                result.is_valid,
+                "Expected valid alias to return true, but got false"
+            );
+        }
     }
 
-    #[test]
-    fn validate_nu_alias_with_parser_invalid_input() {
-        let invalid_alias_name = "homer";
-        let invalid_alias_content = "echo $HOME";
-        let result = validate_alias_with_nu_parser(
-            invalid_alias_name,
-            invalid_alias_content,
-        );
-        assert!(
-            !result.is_valid,
-            "Expected invalid alias to return false, but got true"
-        );
-    }
+    mod should_fail {
+        use super::*;
 
-    #[test]
-    fn validate_nu_alias_with_parser_invalid_source_content() {
-        let invalid_alias_name = "node15";
-        let invalid_alias_content = "source /usr/share/nvm/init-nvm.sh";
-        let result = validate_alias_with_nu_parser(
-            invalid_alias_name,
-            invalid_alias_content,
-        );
-        assert!(
-            !result.is_valid,
-            "Expected invalid alias to return false, but got true"
-        );
-    }
+        #[test]
+        fn invalid_variable_syntax() {
+            let invalid_alias_name = "homer";
+            let invalid_alias_content = "echo $HOME";
+            let result = validate_alias_with_nu_parser(invalid_alias_name, invalid_alias_content);
+            assert!(
+                !result.is_valid,
+                "Expected invalid alias to return false, but got true"
+            );
+        }
 
-    // TODO: Fix this test
-    // #[test]
-    // fn validate_nu_alias_with_parser_invalid_non_zero_exit_code() {
-    //     let invalid_alias_name = "zkn";
-    //     let invalid_alias_content = "cd ~/notes; ~/scripts/zk-new";
-    //     let result = validate_alias_with_nu_parser(
-    //         invalid_alias_name,
-    //         invalid_alias_content,
-    //     );
-    //     assert!(
-    //         !result.is_valid,
-    //         "Expected invalid alias to return false, but got true"
-    //     );
-    // }
+        #[test]
+        fn invalid_source_command() {
+            let invalid_alias_name = "node15";
+            let invalid_alias_content = "source /usr/share/nvm/init-nvm.sh";
+            let result = validate_alias_with_nu_parser(invalid_alias_name, invalid_alias_content);
+            assert!(
+                !result.is_valid,
+                "Expected invalid alias to return false, but got true"
+            );
+        }
+
+        // TODO: Fix this test
+        // #[test]
+        // fn validate_nu_alias_with_parser_invalid_non_zero_exit_code() {
+        //     let invalid_alias_name = "zkn";
+        //     let invalid_alias_content = "cd ~/notes; ~/scripts/zk-new";
+        //     let result = validate_alias_with_nu_parser(
+        //         invalid_alias_name,
+        //         invalid_alias_content,
+        //     );
+        //     assert!(
+        //         !result.is_valid,
+        //         "Expected invalid alias to return false, but got true"
+        //     );
+        // }
+    }
 }
