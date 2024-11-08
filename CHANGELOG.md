@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 - Show error message when readign directories for now
 - Parsing invalid files when using whole directories
 
+### Run
+
+- `cargo fmt`
+
 ## [0.1.3] - 2024-10-17
 
 ### Features
