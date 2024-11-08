@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 - Show error message when readign directories for now
 - Parsing invalid files when using whole directories
 
+### Refactor
+
+- *(tests)* Organize tests into modules based on pass/fail context
+
 ### Run
 
 - `cargo fmt`
