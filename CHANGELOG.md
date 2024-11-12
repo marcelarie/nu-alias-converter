@@ -53,7 +53,7 @@ All notable changes to this project will be documented in this file.
 - Move find_aliases to alias module
 - Replace local tree-sitter-nu submodule with git dependency
 - Rename validate_nu_language to validate_nu_tree_sitter_code
-- Extract proocessing and writing logic to a separated modules
+- Extract processing and writing logic to a separated modules
 
 ### Documentation
 
