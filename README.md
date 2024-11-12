@@ -64,7 +64,7 @@ Nushell):
 
 ```nushell
 # This command will be shorter in the future
-nu-alias-converter ~/.bash_aliases -o $"($nu.default-config-dir)/bash-alises.nu" | ignore
+nu-alias-converter ~/.bash_aliases -o $"($nu.default-config-dir)/bash-aliases.nu" | ignore
 ```
 
 Now add this to your `config.nu` to source the generated aliases file (find the
