@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Features
 
 - Add support for processing directories and add tests
+- Remove time from generated aliases file
 
 ### Bug Fixes
 
