@@ -37,7 +37,7 @@ Convert a single file to Nushell aliases:
 
 ```bash
 # will generate a bash-aliases.nu file in the same directory
-nu-alias-converter .bash_aliases
+nuit .bash_aliases
 ```
 
 Convert all files with aliases in a directory:
@@ -45,7 +45,7 @@ Convert all files with aliases in a directory:
 ```bash
 # will search for alias files in the specified directory and generate
 # a bash-aliases.nu file in the same directory
-nu-alias-converter /path/to/directory
+nuit /path/to/directory
 ```
 
 For optimal use, integrate it into your Nushell environment. This approach
@@ -64,7 +64,7 @@ Nushell):
 
 ```nushell
 # This command will be shorter in the future
-nu-alias-converter ~/.bash_aliases -o $"($nu.default-config-dir)/bash-aliases.nu" | ignore
+nuit ~/.bash_aliases -o $"($nu.default-config-dir)/bash-aliases.nu" | ignore
 ```
 
 Now add this to your `config.nu` to source the generated aliases file (find the
