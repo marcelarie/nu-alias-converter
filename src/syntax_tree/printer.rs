@@ -40,7 +40,7 @@ pub fn print_tree(cursor: &mut TreeCursor, source: &[u8], depth: usize) {
     if cursor.goto_first_child() {
         // Print the first child
         print_tree(cursor, source, depth + 1);
-        // Print all siblings of the first child
+        // Print all subsequent siblings
         while cursor.goto_next_sibling() {
             print_tree(cursor, source, depth + 1);
         }
