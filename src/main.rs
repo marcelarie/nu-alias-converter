@@ -24,11 +24,10 @@ fn main() {
         std::process::exit(1);
     }
 
-    let alias_ignore_result =
-        alias_ignore::get_ignore_set().unwrap_or_else(|| AliasIgnoreResult {
-            alias_ignores:   HashSet::new(),
-            command_ignores: Vec::new(),
-        });
+    let alias_ignore_result = alias_ignore::get_ignore_set().unwrap_or_else(|| AliasIgnoreResult {
+        alias_ignores: HashSet::new(),
+        command_ignores: Vec::new(),
+    });
 
     let aliases = process_path(file_path);
     process_and_write_aliases(aliases, alias_ignore_result, &args);
