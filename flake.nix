@@ -43,7 +43,7 @@
       default = pkgs.mkShell {
         packages = with pkgs; [
           rustToolchain
-          # openssl
+          openssl
           pkg-config
           cargo-deny
           cargo-edit
@@ -63,7 +63,7 @@
       commonArgs = {
         src = ./.;
         strictDeps = true;
-        # buildInputs = [pkgs.openssl];
+        buildInputs = [pkgs.openssl];
       };
     in {
       default = craneLib.buildPackage commonArgs; # 'default' obeys nix build
