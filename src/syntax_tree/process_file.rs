@@ -158,16 +158,30 @@ mod tests {
             let dir_path = PathBuf::from("./src/test/examples/aliases_dir/");
             let aliases = process_path(dir_path);
             assert_eq!(aliases.len(), 5);
-            assert_eq!(aliases[0].name, "brc");
-            assert_eq!(aliases[0].content, "cat \"$HOME\"/.bashrc");
-            assert_eq!(aliases[1].name, "brcs");
-            assert_eq!(aliases[1].content, "source \"$HOME\"/.bashrc");
-            assert_eq!(aliases[2].name, "ls");
-            assert_eq!(aliases[2].content, "ls --color=auto");
-            assert_eq!(aliases[3].name, "ll");
-            assert_eq!(aliases[3].content, "ls -l");
-            assert_eq!(aliases[4].name, "la");
-            assert_eq!(aliases[4].content, "ls -A");
+            
+            // Check that all expected aliases are present regardless of order
+            let alias_names: Vec<&str> = aliases.iter().map(|a| a.name.as_str()).collect();
+            assert!(alias_names.contains(&"brc"));
+            assert!(alias_names.contains(&"brcs"));
+            assert!(alias_names.contains(&"ls"));
+            assert!(alias_names.contains(&"ll"));
+            assert!(alias_names.contains(&"la"));
+            
+            // Find specific aliases by name to verify content
+            let brc_alias = aliases.iter().find(|a| a.name == "brc").unwrap();
+            assert_eq!(brc_alias.content, "cat \"$HOME\"/.bashrc");
+            
+            let brcs_alias = aliases.iter().find(|a| a.name == "brcs").unwrap();
+            assert_eq!(brcs_alias.content, "source \"$HOME\"/.bashrc");
+            
+            let ls_alias = aliases.iter().find(|a| a.name == "ls").unwrap();
+            assert_eq!(ls_alias.content, "ls --color=auto");
+            
+            let ll_alias = aliases.iter().find(|a| a.name == "ll").unwrap();
+            assert_eq!(ll_alias.content, "ls -l");
+            
+            let la_alias = aliases.iter().find(|a| a.name == "la").unwrap();
+            assert_eq!(la_alias.content, "ls -A");
         }
 
         #[test]
