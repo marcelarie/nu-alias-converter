@@ -90,7 +90,5 @@
       };
     });
 
-    # Expose default package directly for simpler access  
-    defaultPackage = forEachSupportedSystem ({pkgs}: self.packages.${pkgs.system}.default);
   };
 }
