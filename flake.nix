@@ -1,5 +1,5 @@
 {
-  description = "A Nix-flake-based Rust development environment";
+  description = "Converts Bash aliases to Nushell - nu-alias-converter";
 
   inputs = {
     crane.url = "github:ipetkov/crane";
@@ -64,9 +64,30 @@
         src = ./.;
         strictDeps = true;
         buildInputs = [pkgs.openssl];
+        nativeBuildInputs = with pkgs; [pkg-config];
+        meta = with pkgs.lib; {
+          description = "Converts Bash aliases to Nushell";
+          homepage = "https://github.com/marcelarie/nu-alias-converter";
+          license = with licenses; [mit asl20];
+          maintainers = [];
+          platforms = platforms.unix;
+        };
       };
+      nu-alias-converter = craneLib.buildPackage commonArgs;
     in {
-      default = craneLib.buildPackage commonArgs; # 'default' obeys nix build
+      default = nu-alias-converter;
+      inherit nu-alias-converter;
+    });
+
+    apps = forEachSupportedSystem ({pkgs}: {
+      default = {
+        type = "app";
+        program = "${self.packages.${pkgs.system}.nu-alias-converter}/bin/nuit";
+      };
+      nuit = {
+        type = "app";
+        program = "${self.packages.${pkgs.system}.nu-alias-converter}/bin/nuit";
+      };
     });
   };
 }
