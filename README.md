@@ -28,7 +28,18 @@ Nushell while retaining compatibility.
 # Installation
 
 ```bash
+# Cargo
 cargo install nu-alias-converter
+
+# Nix (non-declarative)
+nix profile install github:marcelarie/nu-alias-converter
+
+# Nix (declarative with flakes)
+# Add to your flake.nix:
+{
+  inputs.nu-alias-converter.url = "github:marcelarie/nu-alias-converter";
+  # Then add to your packages: inputs.nu-alias-converter
+}
 ```
 
 ## Usage
